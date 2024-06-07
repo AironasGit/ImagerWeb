@@ -2,5 +2,30 @@
 {% block 'title' %} Profile {% endblock %}
 {% block 'header' %}Profile{% endblock %}
 {% block 'content' %}
-<h1>Visits: {{ num_visits }}</h1>
+<input type="button" name"button" onclick="loadProfileImages()" value="Load all images">
+<div class="mainContainer">
+    <script>
+        function loadProfileImages() {
+        $(document).ready(function(){
+            setTimeout(function(){
+                $.ajax({
+                    type: 'GET',
+                    url: "{% url 'get_profile_images' %}",
+                    success: function(response){
+                        console.log(response.images)
+                        $(".mainContainer").empty();
+                        for (var key in response.images){
+                            var temp = '<div class="imageCard"><div class="imageContainer">'+"<img src=/media/"+response.images[key].image+"/>"+'</div></div>'
+                            $(".mainContainer").append(temp);
+                        }
+                    },
+                    error: function(response){
+                        alert("Error!")
+                    }
+                });
+            }, 1);
+    });
+}
+    </script>
+</div>
 {% endblock %}
