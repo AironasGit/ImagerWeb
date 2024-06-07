@@ -2,10 +2,8 @@
 {% block 'title' %} Profile {% endblock %}
 {% block 'header' %}Profile{% endblock %}
 {% block 'content' %}
-<input type="button" name"button" onclick="loadProfileImages()" value="Load all images">
 <div class="mainContainer">
     <script>
-        function loadProfileImages() {
         $(document).ready(function(){
             setTimeout(function(){
                 $.ajax({
@@ -25,7 +23,6 @@
                 });
             }, 1);
     });
-}
     </script>
 </div>
 {% endblock %}

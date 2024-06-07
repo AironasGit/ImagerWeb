@@ -39,6 +39,7 @@ footer{
 .imageCard{
   border-radius: 15px;
   margin: 5px;
+  border:1px solid black;
 }
 .imageContainer img{
   width: auto;

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from .models import Image
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 # Create your views here.
 
 def index(request):
@@ -12,10 +13,9 @@ def index(request):
     return render(request, template_name='index.html', context=context)
 
 def get_images(request):
-    if request.GET['action'] == 'none':
-        return JsonResponse({})
-    images = Image.objects.filter(is_private=False)
-    return JsonResponse({"images": list(images.values())})
+    values = ('user__username', 'image', 'date')
+    images = Image.objects.filter(is_private=False).values(*values)
+    return JsonResponse({'data': list(images.values(*values))})
 
 @login_required(login_url='../accounts/login/')
 def profile(request):
