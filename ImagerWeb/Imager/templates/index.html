@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block 'title' %} Home {% endblock %}
+{% block 'header' %}Home page{% endblock %}
+{% block 'content' %}
+<input type="button" name"button" onclick="loadImages('all')" value="Load all images">
+<input type="button" name"button" onclick="loadImages('none')" value="Load none">
+<div class="mainContainer">
+    <script>
+        function loadImages(action) {
+        $(document).ready(function(){
+            setTimeout(function(){
+                $.ajax({
+                    type: 'GET',
+                    url: "{% url 'get_images' %}",
+                    data: {
+                        action: action
+                    },
+                    success: function(response){
+                        console.log(response.images)
+                        $(".mainContainer").empty();
+                        for (var key in response.images){
+                            var temp = '<div class="imageCard"><div class="imageContainer">'+"<img src=/media/"+response.images[key].image+"/>"+'</div></div>'
+                            $(".mainContainer").append(temp);
+                        }
+                    },
+                    error: function(response){
+                        alert("Error!")
+                    }
+                });
+            }, 1);
+    });
+}
+    </script>
+</div>
+{% endblock %}

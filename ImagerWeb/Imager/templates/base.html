@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>{% block 'title' %}{% endblock %}</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <header>
+    <h2>{% block 'header' %}{% endblock %}</h2>
+  </header>
+  <div class="btn-group">
+    <form action="{% url 'index' %}">
+      <button class="button">Home</button>
+    </form>
+    <form action="{% url 'profile' %}">
+      <button class="button">Profile</button>
+    </form>
+    {% if request.user.is_authenticated %}
+      <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="button">Logout</button>
+      </form>
+    {% endif %}
+  </div>
+  <div class="main">
+    {% block 'content' %}{% endblock %}
+  </div>
+  <footer>
+    {% block 'footer' %}{% endblock %}
+    <h3>&#169; Aironas Rajunčius</h3>
+  </footer>
+</body>
+</html>
+
