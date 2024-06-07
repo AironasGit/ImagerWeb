@@ -10,4 +10,8 @@ class Image(models.Model):
     is_private = models.BooleanField(verbose_name='Is Private', default=True)
     
     def __str__(self):
-        return f"{self.image.name} ({self.user.username}) Private: {self.is_private}"
+        if self.is_private:
+            access = 'Private'
+        else:
+            access = 'Public'
+        return f"{self.image.name} ({self.user.username}) {access}"

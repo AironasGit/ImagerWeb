@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% block 'title' %} Profile {% endblock %}
 {% block 'header' %}Profile{% endblock %}
+{% block 'upload' %}
+    <form action="{% url 'profile' %}">
+        <button class="button upload">Upload image</button>
+    </form>
+{% endblock %}
 {% block 'content' %}
 <div class="mainContainer">
     <script>

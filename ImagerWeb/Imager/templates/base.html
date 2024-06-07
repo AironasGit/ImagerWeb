@@ -19,10 +19,11 @@
     <form action="{% url 'profile' %}">
       <button class="button">Profile</button>
     </form>
+    {% block 'upload' %}{% endblock %}
     {% if request.user.is_authenticated %}
       <form action="{% url 'logout' %}" method="post">
         {% csrf_token %}
-        <button type="submit" class="button">Logout</button>
+        <button type="submit" class="button logout">Logout</button>
       </form>
     {% endif %}
   </div>
