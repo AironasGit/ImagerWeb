@@ -16,8 +16,8 @@
                                             <div class="imageContainer">'
                                                 +"<img src=/media/"+response.data[key].image+"/>"+' \
                                             </div> \
-                                            <h5>Owner:'+ response.data[key].user__username +'</h5> \
-                                            <h5>Date:'+ response.data[key].date +'</h5> \
+                                            <h5 class="imageCardText">Owner: '+ response.data[key].user__username +'</h5> \
+                                            <h5 class="imageCardText">Date: '+ response.data[key].date.split('T')[0] +'</h5> \
                                         </div>'
                             $(".mainContainer").append(temp);
                         }
