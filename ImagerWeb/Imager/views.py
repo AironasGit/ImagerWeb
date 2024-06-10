@@ -17,8 +17,11 @@ from .forms import ImageForm
 def index(request):
     values = ('user__username', 'image', 'date')
     images = Image.objects.filter(is_private=False).values(*values)
+    paginator = Paginator(images, per_page=9)
+    page_number = request.GET.get('page')
+    paged_images = paginator.get_page(page_number)
     context ={
-        'images': images
+        'images': paged_images
     }
     return render(request, template_name='index.html', context=context)
 

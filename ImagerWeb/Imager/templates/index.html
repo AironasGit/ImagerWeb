@@ -3,8 +3,8 @@
 {% block 'header' %} All public images from all users {% endblock %}
 {% block 'content' %}
 <div class="mainContainer">
+    {% for item in images %}
     <form action="get">
-        {% for item in images %}
         <div class="imageCard">
             <div class="imageContainer">
                 <img src="/media/{{item.image}}"/>
@@ -12,8 +12,22 @@
             <h5 class="imageCardText">Owner: {{item.user__username}}</h5>
             <h5 class="imageCardText">Date: {{item.date}}</h5>
         </div>
-        {% endfor %}
     </form>
-    
+    {% endfor %}
+    {% if images.has_other_pages %}
+        <ul class="pagination pagination-sm justify-content-center" style="margin: auto;">
+            {% for i in images.paginator.page_range %}
+            {% if images.number == i %}
+            <li class="page-item active">
+                <a class="page-link">{{ i }}</a>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
 </div>
 {% endblock %}
