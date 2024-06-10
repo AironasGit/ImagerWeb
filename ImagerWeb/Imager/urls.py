@@ -9,4 +9,5 @@ urlpatterns = [
     path('get_profile_images', views.get_profile_images, name='get_profile_images'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('register/', views.register, name='register'),
+    path('upload_img/', views.upload_img, name='upload_img'),
 ]

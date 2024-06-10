@@ -11,23 +11,44 @@
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-  <header>
-    <a style="font-size: 30px;">{% block 'header' %}{% endblock %}</a>
-  </header>
-  <div class="btn-group">
-    <form action="{% url 'index' %}">
-      <button class="button">Home</button>
-    </form>
-    <form action="{% url 'profile' %}">
-      <button class="button">Profile</button>
-    </form>
-    {% block 'upload' %}{% endblock %}
-    {% if request.user.is_authenticated %}
-      <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="button logout">Logout</button>
-      </form>
+  <header style="display: flex;">
+    {% if user.is_authenticated %}
+      <p style="font-size: 20px; margin-top: 10px;" >Logged in as {{request.user.username}}</p>
+    {% else %}
+    <p style="font-size: 20px; margin-top: 10px;" >Not logged in</p>
     {% endif %}
+    <a style="font-size: 30px; margin: auto;position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;">{% block 'header' %}{% endblock %}</a>
+  </header>
+  <div style="display: flex;">
+    <div class="btn-group" id="first">
+      <form action="{% url 'index' %}">
+        <button class="button">Home</button>
+      </form>
+      <div class="btn-group">
+        <form action="{% url 'profile' %}">
+          <button class="button">Profile</button>
+        </form>
+      </div>
+      {% block 'upload' %}{% endblock %}
+    </div>
+    <div class="btn-group" id="second">
+      {% if request.user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="button logout">Logout</button>
+        </form>
+      {% else %}
+        <form action="{% url 'login' %}">
+          <button type="submit" class="button">Login</button>
+        </form>
+        <form action="{% url 'register' %}">
+          <button type="submit" class="button">Register</button>
+        </form>
+      {% endif %}
+    </div>
   </div>
   <div class="main">
     {% block 'content' %}{% endblock %}

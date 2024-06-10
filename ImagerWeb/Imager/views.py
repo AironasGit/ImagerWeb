@@ -4,10 +4,13 @@ from .models import Image
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth.forms import User
+from .models import Image
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from datetime import datetime
+from .forms import ImageForm
 # Create your views here.
 
 def index(request):
@@ -32,6 +35,26 @@ def profile(request):
 def get_profile_images(request):
     images = Image.objects.filter(user=request.user)
     return JsonResponse({"images": list(images.values())})
+
+@csrf_protect
+def upload_img(request):
+    if request.method == "POST":
+        if not request.POST.get('isPrivate', False):
+            is_private = False
+        else:
+            is_private = True
+        data = request.POST.copy()
+        data['user'] = request.user
+        data['is_private'] = is_private
+        form = ImageForm(data, request.FILES)
+        
+        if form.is_valid():
+            form.save()
+            messages.info(request, f'Image uploaded!')
+            return redirect('upload_img')
+        return redirect('upload_img')
+        
+    return render(request, 'upload_img.html')
 
 @csrf_protect
 def register(request):
