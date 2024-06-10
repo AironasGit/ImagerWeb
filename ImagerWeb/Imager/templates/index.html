@@ -3,31 +3,17 @@
 {% block 'header' %} All public images from all users {% endblock %}
 {% block 'content' %}
 <div class="mainContainer">
-    <script>
-        $(document).ready(function(){
-            setTimeout(function(){
-                $.ajax({
-                    type: 'GET',
-                    url: "{% url 'get_images' %}",
-                    success: function(response){
-                        $(".mainContainer").empty();
-                        for (var key in response.data){
-                            var temp = '<div class="imageCard"> \
-                                            <div class="imageContainer">'
-                                                +"<img src=/media/"+response.data[key].image+"/>"+' \
-                                            </div> \
-                                            <h5 class="imageCardText">Owner: '+ response.data[key].user__username +'</h5> \
-                                            <h5 class="imageCardText">Date: '+ response.data[key].date.split('T')[0] +'</h5> \
-                                        </div>'
-                            $(".mainContainer").append(temp);
-                        }
-                    },
-                    error: function(response){
-                        alert("Error!")
-                    }
-                });
-            }, 1);
-    });
-    </script>
+    <form action="get">
+        {% for item in images %}
+        <div class="imageCard">
+            <div class="imageContainer">
+                <img src="/media/{{item.image}}"/>
+            </div>
+            <h5 class="imageCardText">Owner: {{item.user__username}}</h5>
+            <h5 class="imageCardText">Date: {{item.date}}</h5>
+        </div>
+        {% endfor %}
+    </form>
+    
 </div>
 {% endblock %}

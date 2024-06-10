@@ -10,19 +10,24 @@ from django.contrib import messages
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from datetime import datetime
+from django.core.paginator import Paginator
 from .forms import ImageForm
 # Create your views here.
 
 def index(request):
-    image_data_list = Image.objects.all()
-    context = {
-        #'image_data_list': image_data_list
+    values = ('user__username', 'image', 'date')
+    images = Image.objects.filter(is_private=False).values(*values)
+    context ={
+        'images': images
     }
     return render(request, template_name='index.html', context=context)
 
 def get_images(request):
     values = ('user__username', 'image', 'date')
     images = Image.objects.filter(is_private=False).values(*values)
+    #paginator = Paginator(images, per_page=9)
+    #page_number = request.GET.get('page')
+    #paged_images = paginator.get_page(page_number)
     return JsonResponse({'data': list(images.values(*values))})
 
 @login_required(login_url='../accounts/login/')
