@@ -5,18 +5,19 @@
 <div class="mainContainer">
     {% for item in images %}
     <form action="get">
-        <div class="imageCard">
+        <div class="imageCard" onclick="location.href='image/{{item.image}}';">
             <div class="imageContainer">
                 <img src="/media/{{item.image}}"/>
             </div>
-            <h5 class="imageCardText">Owner: {{item.user__username}}</h5>
-            <h5 class="imageCardText">Date: {{item.date}}</h5>
+            <p>Owner: {{item.user__username}}</p>
+            <p>Date: {{item.date}}</p>
         </div>
     </form>
     {% endfor %}
-    {% if images.has_other_pages %}
-        <ul class="pagination pagination-sm justify-content-center" style="margin: auto;">
-            {% for i in images.paginator.page_range %}
+</div>
+{% if images.has_other_pages %}
+    <ul class="pagination pagination-sm justify-content-center">
+        {% for i in images.paginator.page_range %}
             {% if images.number == i %}
             <li class="page-item active">
                 <a class="page-link">{{ i }}</a>
@@ -26,8 +27,7 @@
                 <a class="page-link" href="?page={{ i }}">{{ i }}</a>
             </li>
             {% endif %}
-            {% endfor %}
-        </ul>
-        {% endif %}
-</div>
+        {% endfor %}
+    </ul>
+    {% endif %}
 {% endblock %}

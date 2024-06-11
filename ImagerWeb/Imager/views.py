@@ -12,6 +12,9 @@ from django.core.exceptions import ValidationError
 from datetime import datetime
 from django.core.paginator import Paginator
 from .forms import ImageForm
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from hashlib import sha256
+from datetime import datetime
 # Create your views here.
 
 def index(request):
@@ -25,12 +28,17 @@ def index(request):
     }
     return render(request, template_name='index.html', context=context)
 
+def image(request, image_name):
+    values = ('user__username', 'image', 'date')
+    image = Image.objects.filter(image=image_name).values(*values)
+    context ={
+        'image': image[0]
+    }
+    return render(request, template_name='image.html', context=context)
+
 def get_images(request):
     values = ('user__username', 'image', 'date')
     images = Image.objects.filter(is_private=False).values(*values)
-    #paginator = Paginator(images, per_page=9)
-    #page_number = request.GET.get('page')
-    #paged_images = paginator.get_page(page_number)
     return JsonResponse({'data': list(images.values(*values))})
 
 @login_required(login_url='../accounts/login/')
@@ -47,14 +55,29 @@ def get_profile_images(request):
 @csrf_protect
 def upload_img(request):
     if request.method == "POST":
+        
         if not request.POST.get('isPrivate', False):
             is_private = False
         else:
             is_private = True
-        data = request.POST.copy()
+            
+        data, file = request.POST.copy(), request.FILES.copy()
+        
+        if not file.get('image', False):
+            messages.error(request, f'No image was selected')
+            return redirect('upload_img')
+        
+        file_name, file_extension = file['image'].name.split('.', 1)
+        file_name = f"{file_name}{str(datetime.now())}"
+        hashed_file_name = sha256(file_name.encode('utf-8')).hexdigest()
+        new_file_name = f"{hashed_file_name}.{file_extension}"
+        
+        file_with_changed_name = InMemoryUploadedFile(file = file['image'].file, field_name=file['image'].field_name, content_type=file['image'].content_type, size=file['image'].size, charset=file['image'].charset, content_type_extra=file['image'].content_type_extra,
+            name=new_file_name)
+        file['image'] = file_with_changed_name
         data['user'] = request.user
         data['is_private'] = is_private
-        form = ImageForm(data, request.FILES)
+        form = ImageForm(data, file)
         
         if form.is_valid():
             form.save()
