@@ -36,14 +36,15 @@ def image(request, image_name):
     }
     return render(request, template_name='image.html', context=context)
 
-def get_images(request):
-    values = ('user__username', 'image', 'date')
-    images = Image.objects.filter(is_private=False).values(*values)
-    return JsonResponse({'data': list(images.values(*values))})
-
 @login_required(login_url='../accounts/login/')
 def profile(request):
-    context = {
+    values = ('user__username', 'image', 'date')
+    images = Image.objects.filter(user_id=request.user.id).values(*values)
+    paginator = Paginator(images, per_page=9)
+    page_number = request.GET.get('page')
+    paged_images = paginator.get_page(page_number)
+    context ={
+        'images': paged_images
     }
     return render(request, template_name='profile.html', context=context)
 
@@ -54,6 +55,7 @@ def get_profile_images(request):
 
 @csrf_protect
 def upload_img(request):
+    redirect_url = 'upload_img'
     if request.method == "POST":
         
         if not request.POST.get('isPrivate', False):
@@ -65,7 +67,7 @@ def upload_img(request):
         
         if not file.get('image', False):
             messages.error(request, f'No image was selected')
-            return redirect('upload_img')
+            return redirect(redirect_url)
         
         file_name, file_extension = file['image'].name.split('.', 1)
         file_name = f"{file_name}{str(datetime.now())}"
@@ -82,8 +84,8 @@ def upload_img(request):
         if form.is_valid():
             form.save()
             messages.info(request, f'Image uploaded!')
-            return redirect('upload_img')
-        return redirect('upload_img')
+            return redirect(redirect_url)
+        return redirect(redirect_url)
         
     return render(request, 'upload_img.html')
 
@@ -119,3 +121,14 @@ def register(request):
             messages.error(request, 'Passwords are not matching')
             return redirect('register')
     return render(request, 'registration/register.html')
+
+def public_profile(request, username):
+    values = ('user__username', 'image', 'date')
+    images = Image.objects.filter(user__username=username, is_private=False).values(*values)
+    paginator = Paginator(images, per_page=9)
+    page_number = request.GET.get('page')
+    paged_images = paginator.get_page(page_number)
+    context ={
+        'images': paged_images
+    }
+    return render(request, template_name='public_profile.html', context=context)

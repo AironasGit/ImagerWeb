@@ -3,6 +3,8 @@
 {% block 'header' %} All public images from all users {% endblock %}
 {% block 'content' %}
     <form action="get">
-        <img src="/media/{{image.image}}" style="margin: auto; display: block;"/>
+        <img src="/media/{{image.image}}" style="margin: auto; display: block; max-width: 60%; border: 1px solid; border-radius: 15px;"/>
     </form>
+    <br>
+    <button class="btn btn-primary" style="display: block; margin:auto"><a href="{% url 'public_profile' image.user__username %}" style="color: white; text-decoration:none">{{image.user__username}} profile</a></button>
 {% endblock %}

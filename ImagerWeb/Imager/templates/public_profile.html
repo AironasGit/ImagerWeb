@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% block 'title' %} Profile {% endblock %}
-{% block 'header' %}Profile{% endblock %}
+{% block 'title' %} Public Profile {% endblock %}
+{% block 'header' %}request.user.name Profile {% endblock %}
 {% block 'upload' %}
     <form action="{% url 'upload_img' %}">
         <button class="button upload">Upload image</button>
