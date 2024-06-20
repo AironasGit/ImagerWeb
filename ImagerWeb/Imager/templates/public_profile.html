@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
-{% block 'title' %} Public Profile {% endblock %}
-{% block 'header' %}request.user.name Profile {% endblock %}
-{% block 'upload' %}
-    <form action="{% url 'upload_img' %}">
-        <button class="button upload">Upload image</button>
-    </form>
+{% block 'title' %} Pu
+blic Profile {% endblock %}
+{% block 'header' %}
+    {% for item in images|slice:":1" %}
+        {{item.user__username}}'s public Images
+    {% endfor %}
 {% endblock %}
 {% block 'content' %}
 <div class="mainContainer">
@@ -14,7 +14,7 @@
             <div class="imageContainer">
                 <img src="/media/{{item.image}}"/>
             </div>
-            <p>Owner: {{item.user__username}}</p>
+            <br>
             <p>Date: {{item.date}}</p>
         </div>
     </form>

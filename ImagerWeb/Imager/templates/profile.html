@@ -1,38 +1,55 @@
 {% extends 'base.html' %}
 {% block 'title' %} Profile {% endblock %}
 {% block 'header' %}Profile{% endblock %}
-{% block 'upload' %}
-    <form action="{% url 'upload_img' %}">
-        <button class="button upload">Upload image</button>
-    </form>
-{% endblock %}
 {% block 'content' %}
-<div class="mainContainer">
-    {% for item in images %}
-    <form action="get">
-        <div class="imageCard" onclick="location.href='../image/{{item.image}}';">
-            <div class="imageContainer">
-                <img src="/media/{{item.image}}"/>
-            </div>
-            <p>Owner: {{item.user__username}}</p>
-            <p>Date: {{item.date}}</p>
+<div style="display: flex;">
+    <div style="flex: 1;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg" alt="" style="display: block; margin: auto; width: 20%;">
+        <br>
+        <div style="display: grid;">
+            <h5 style="display: block; margin: auto;">Space used: 85/100 mb</h5>
+            <h5 style="display: block; margin: auto;">Images used: 35/50</h5>
+            <h5 style="display: block; margin: auto;">Current plan: Free</h5>
         </div>
-    </form>
-    {% endfor %}
+    </div>
+    <div style="flex: 1; border-left: 5px solid;" >
+        <div style="display: flex;">
+            <form action="{% url 'upload_img' %}" style="display: block; margin: auto;">
+                <button class="button upload">Upload image</button>
+            </form>
+        </div>
+        <div class="mainContainer" style="max-width: 100%;">
+            {% for item in images %}
+            <form action="get">
+                <div class="imageCard" onclick="location.href='../image/{{item.image}}';">
+                    <div class="imageContainer">
+                        <img src="/media/{{item.image}}"/>
+                    </div>
+                    {% if item.is_private %}
+                        <p>Private</p>
+                    {% else %}
+                        <p>Public</p>
+                    {% endif %}
+                    <p>Date: {{item.date}}</p>
+                </div>
+            </form>
+            {% endfor %}
+        </div>
+        {% if images.has_other_pages %}
+            <ul class="pagination pagination-sm justify-content-center">
+                {% for i in images.paginator.page_range %}
+                    {% if images.number == i %}
+                    <li class="page-item active">
+                        <a class="page-link">{{ i }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
 </div>
-{% if images.has_other_pages %}
-    <ul class="pagination pagination-sm justify-content-center">
-        {% for i in images.paginator.page_range %}
-            {% if images.number == i %}
-            <li class="page-item active">
-                <a class="page-link">{{ i }}</a>
-            </li>
-            {% else %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
-            </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
-{% endif %}
 {% endblock %}

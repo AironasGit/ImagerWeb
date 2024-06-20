@@ -38,7 +38,7 @@ def image(request, image_name):
 
 @login_required(login_url='../accounts/login/')
 def profile(request):
-    values = ('user__username', 'image', 'date')
+    values = ('user__username', 'image', 'date', 'is_private')
     images = Image.objects.filter(user_id=request.user.id).values(*values)
     paginator = Paginator(images, per_page=9)
     page_number = request.GET.get('page')
@@ -54,6 +54,7 @@ def get_profile_images(request):
     return JsonResponse({"images": list(images.values())})
 
 @csrf_protect
+@login_required(login_url='../accounts/login/')
 def upload_img(request):
     redirect_url = 'upload_img'
     if request.method == "POST":

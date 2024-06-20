@@ -17,12 +17,9 @@
     {% else %}
     <p style="font-size: 20px; margin-top: 10px;" >Not logged in</p>
     {% endif %}
-    <a style="font-size: 30px; margin: auto;position: absolute;
-    left: 0px;
-    right: 0px;
-    top: 0px;">{% block 'header' %}{% endblock %}</a>
+    <a style="font-size: 30px; margin: auto;position: absolute;left: 0px;right: 0px;top: 0px;">{% block 'header' %}{% endblock %}</a>
   </header>
-  <div style="display: flex;">
+  <div style="display: flex; position: sticky; top: 0;">
     <div class="btn-group" id="first">
       <form action="{% url 'index' %}">
         <button class="button">Home</button>
@@ -32,7 +29,6 @@
           <button class="button">Profile</button>
         </form>
       </div>
-      {% block 'upload' %}{% endblock %}
     </div>
     <div class="btn-group" id="second">
       {% if request.user.is_authenticated %}
