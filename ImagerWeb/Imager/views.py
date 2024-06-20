@@ -4,7 +4,7 @@ from .models import Image
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth.forms import User
-from .models import Image
+from .models import Image, Profile, Plan
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.contrib.auth.password_validation import validate_password
@@ -15,6 +15,7 @@ from .forms import ImageForm
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from hashlib import sha256
 from datetime import datetime
+import os
 # Create your views here.
 
 def index(request):
@@ -29,7 +30,7 @@ def index(request):
     return render(request, template_name='index.html', context=context)
 
 def image(request, image_name):
-    values = ('user__username', 'image', 'date')
+    values = ('user__id', 'user__username', 'image', 'date', 'id')
     image = Image.objects.filter(image=image_name).values(*values)
     context ={
         'image': image[0]
@@ -38,13 +39,23 @@ def image(request, image_name):
 
 @login_required(login_url='../accounts/login/')
 def profile(request):
+    if request.method == "POST":
+        set_profile_photo(request)
     values = ('user__username', 'image', 'date', 'is_private')
     images = Image.objects.filter(user_id=request.user.id).values(*values)
+    profile = Profile.objects.filter(user_id=request.user.id)
+    
+    details = {}
+    details['images_count'] = Image.objects.filter(user_id=request.user.id).count()
+    details['images_size'] = get_images_size(images)
+    
     paginator = Paginator(images, per_page=9)
     page_number = request.GET.get('page')
     paged_images = paginator.get_page(page_number)
     context ={
-        'images': paged_images
+        'images': paged_images,
+        'profile': profile[0],
+        'details': details
     }
     return render(request, template_name='profile.html', context=context)
 
@@ -66,8 +77,21 @@ def upload_img(request):
             
         data, file = request.POST.copy(), request.FILES.copy()
         
+        
+        images_count = Image.objects.filter(user_id=request.user.id).count()
+        images_size = get_images_size(Image.objects.filter(user_id=request.user.id).values('image'))
+        profile = Profile.objects.filter(user=request.user.id)
+        
+        if images_count >= profile[0].plan.image_limit:
+            messages.error(request, f'You have reached the limit of the images you can have')
+            return redirect(redirect_url)
+        
         if not file.get('image', False):
             messages.error(request, f'No image was selected')
+            return redirect(redirect_url)
+        
+        if (round(file['image'].size / (1024*1024.0), 2) + images_size) >= profile[0].plan.space_limit:
+            messages.error(request, f'Uploading selected image will exceed the allowed space')
             return redirect(redirect_url)
         
         file_name, file_extension = file['image'].name.split('.', 1)
@@ -133,3 +157,19 @@ def public_profile(request, username):
         'images': paged_images
     }
     return render(request, template_name='public_profile.html', context=context)
+
+
+def set_profile_photo(request):
+    profile = Profile.objects.get(user=request.user.id)
+    image_id = request.POST['imageId']
+    image = Image.objects.get(id=image_id)
+    profile.photo = image
+    profile.save()
+
+def get_images_size(images): # size in MB
+    images_size = 0
+    for image in images:
+        images_size = images_size + os.path.getsize(f"{os.path.abspath(os.path.dirname(__name__))}/Imager/media/{image['image']}")
+    images_size = round(images_size / (1024*1024.0), 2)
+    return images_size
+

@@ -15,3 +15,19 @@ class Image(models.Model):
         else:
             access = 'Public'
         return f"{self.image.name} ({self.user.username}) {access}"
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    photo = models.ForeignKey(to='Image', verbose_name=('Photo'), on_delete=models.CASCADE)
+    plan = models.ForeignKey(to='Plan', verbose_name='Plan', on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f"{self.user.username}"
+    
+class Plan(models.Model):
+    name = models.CharField(verbose_name=('Name'), max_length=20)
+    space_limit = models.IntegerField(verbose_name='Space Limit')
+    image_limit = models.IntegerField(verbose_name='Image Limit')
+    
+    def __str__(self):
+        return f"{self.name}"
