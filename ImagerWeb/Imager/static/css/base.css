@@ -4,6 +4,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   }
 header{
+  display: flex;
   text-align: center;
   background: #181818;
   color: white;
@@ -12,6 +13,23 @@ header{
   position: fixed;
   width: 100%;
   height: 60px;
+}
+header p{
+  font-size: 20px;
+  margin-top: 10px;
+}
+.headerText{
+  font-size: 30px;
+  margin: auto;
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+}
+.navBar{
+  display: flex;
+  position: sticky;
+  top: 0;
 }
 footer{
   text-align: center;
@@ -39,18 +57,20 @@ footer{
 .imageCard{
   width: 300px;
   margin: 5px;
-  border: 2px solid black;
+  border: 1px solid black;
   background: #3C6478;
   border-radius: 15px;
 }
 .imageContainer img{
-  display: block;margin-left:auto;margin-right:auto;
+  display: block;
+  margin-left:auto;
+  margin-right:auto;
   border-radius: 12px;
   max-width: 100%;
   max-height: 100%;
 }
 .imageCard:hover{
-  box-shadow: 0 0 11px rgba(33,33,33,.8); 
+  box-shadow: 0 0 15px rgba(33,33,33,.8); 
 }
 .main{
   margin-bottom: 66px;
@@ -75,7 +95,7 @@ footer{
   cursor: pointer;
   display: flex;
 }
-#second.btn-group{
+.navBar #second.btn-group{
   margin-left: auto;
 }
 .btn-group .button.upload {
