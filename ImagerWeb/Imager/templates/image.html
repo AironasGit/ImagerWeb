@@ -1,18 +1,25 @@
 {% extends 'base.html' %}
 {% block 'title' %} Home {% endblock %}
 {% block 'header' %} {% endblock %}
+{% block 'extraStatic' %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/image.css' %}">
+{% endblock %}
 {% block 'content' %}
     <form action="get">
-        <img src="/media/{{image.image}}" style="margin: auto; display: block; max-width: 60%; border: 1px solid; border-radius: 15px;"/>
+        <img class="mainImage" src="/media/{{image.image}}"/>
     </form>
     <br>
-    <button class="btn btn-primary" style="display: block; margin:auto"><a href="{% url 'public_profile' image.user__username %}" style="color: white; text-decoration:none">{{image.user__username}} profile</a></button>
-    {% if image.user__id == user.id %}
-    <br>
-    <form method="post" action="{% url 'set_profile_photo' %}">
+    <form method="post" action="{% url 'public_profile' image.user__username %}">
         {% csrf_token %}
-        <input name="imageId" type="hidden" value="{{image.id}}">
-        <button type="submit" class="btn btn-primary" style="display: block; margin:auto">Set as profile photo</button>
+        <button class="btn btn-primary" id="btn">{{image.user__username}} profile</button>
     </form>
+    {% if image.user__id == user.id %}
+        <br>
+        <form method="post" action="{% url 'set_profile_photo' %}">
+            {% csrf_token %}
+            <input name="imageId" type="hidden" value="{{image.id}}">
+            <button type="submit" class="btn btn-primary"  id="btn">Set as profile photo</button>
+        </form>
     {% endif %}
 {% endblock %}
