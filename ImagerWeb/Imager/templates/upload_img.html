@@ -1,11 +1,7 @@
 {% extends 'base.html' %}
-
 {% block 'title' %}Upload{% endblock %}
-
 {% block 'header' %}Upload image{% endblock %}
-
 {% block 'content' %}
-  
   {% if next %}
     {% if user.is_authenticated %}
       <p>You dont have access to this information. You have to login.</p>
