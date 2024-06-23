@@ -1,24 +1,28 @@
 {% extends 'base.html' %}
 {% block 'title' %} Profile {% endblock %}
 {% block 'header' %}Profile{% endblock %}
+{% block 'extraStatic' %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
 {% block 'content' %}
-<div style="display: flex;">
-    <div style="flex: 1;">
-        <img src="{{profile.photo.image.url}}" alt="" style="display: block; margin: auto; width: 50%; border-radius: 100%;">
+<div class="profileParent">
+    <div class="profileChild" id="one">
+        <img class="profilePhoto" src="{{profile.photo.image.url}}">
         <br>
-        <div style="display: grid;">
-            <h5 style="display: block; margin: auto;">Space used: {{details.images_size}}/{{profile.plan.space_limit}} MB</h5>
-            <h5 style="display: block; margin: auto;">Images used: {{details.images_count}}/{{profile.plan.image_limit}}</h5>
-            <h5 style="display: block; margin: auto;">Current plan: {{profile.plan.name}}</h5>
+        <div class="profileInfo">
+            <h5 class="detail">Space used: {{details.images_size}}/{{profile.plan.space_limit}} MB</h5>
+            <h5 class="detail">Images used: {{details.images_count}}/{{profile.plan.image_limit}}</h5>
+            <h5 class="detail">Current plan: {{profile.plan.name}}</h5>
         </div>
     </div>
-    <div style="flex: 1; border-left: 5px solid;" >
-        <div style="display: flex;">
-            <form action="{% url 'upload_img' %}" style="display: block; margin: auto;">
-                <button class="button upload">Upload image</button>
+    <div class="profileChild" id="two">
+        <div class="imagesNavBar">
+            <form action="{% url 'upload_img' %}">
+                <button class="btn-group">Upload image</button>
             </form>
         </div>
-        <div class="mainContainer" style="max-width: 100%;">
+        <div class="mainContainer">
             {% for item in images %}
             <form action="get">
                 <div class="imageCard" onclick="location.href='../image/{{item.image}}';">
