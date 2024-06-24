@@ -15,13 +15,14 @@ from .forms import ImageForm
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from hashlib import sha256
 from datetime import datetime
-import os
+from .utils import get_images_size
 # Create your views here.
 
 def index(request):
     values = ('user__username', 'image', 'date')
+    per_page = 9
     images = Image.objects.filter(is_private=False).values(*values)
-    paginator = Paginator(images, per_page=9)
+    paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')
     paged_images = paginator.get_page(page_number)
     context ={
@@ -39,118 +40,113 @@ def image(request, image_name):
 
 @login_required(login_url='../accounts/login/')
 def profile(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         set_profile_photo(request)
     values = ('user__username', 'image', 'date', 'is_private')
+    per_page = 9
     images = Image.objects.filter(user_id=request.user.id).values(*values)
-    profile = Profile.objects.filter(user_id=request.user.id)
-    
-    details = {}
-    details['images_count'] = Image.objects.filter(user_id=request.user.id).count()
-    details['images_size'] = get_images_size(images)
-    
-    paginator = Paginator(images, per_page=9)
+    profile = Profile.objects.filter(user_id=request.user.id).first()
+    paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')
     paged_images = paginator.get_page(page_number)
     context ={
         'images': paged_images,
-        'profile': profile[0],
-        'details': details
+        'profile': profile,
+        'images_count': len(images),
+        'images_size': get_images_size(images)
     }
     return render(request, template_name='profile.html', context=context)
-
-@login_required(login_url='../accounts/login/')
-def get_profile_images(request):
-    images = Image.objects.filter(user=request.user)
-    return JsonResponse({"images": list(images.values())})
 
 @csrf_protect
 @login_required(login_url='../accounts/login/')
 def upload_img(request):
     redirect_url = 'upload_img'
-    if request.method == "POST":
-        
-        if not request.POST.get('isPrivate', False):
-            is_private = False
-        else:
+    if request.method == 'POST':
+        is_private = False
+        if request.POST.get('isPrivate', False):
             is_private = True
-            
         data, file = request.POST.copy(), request.FILES.copy()
+        images = Image.objects.filter(user_id=request.user.id).values('image')
+        profile = Profile.objects.filter(user=request.user.id).first()
+        images_count = len(image)
+        images_size = get_images_size(images)
         
-        
-        images_count = Image.objects.filter(user_id=request.user.id).count()
-        images_size = get_images_size(Image.objects.filter(user_id=request.user.id).values('image'))
-        profile = Profile.objects.filter(user=request.user.id)
-        
-        if images_count >= profile[0].plan.image_limit:
+        if images_count >= profile.plan.image_limit:
             messages.error(request, f'You have reached the limit of the images you can have')
             return redirect(redirect_url)
-        
         if not file.get('image', False):
             messages.error(request, f'No image was selected')
             return redirect(redirect_url)
-        
-        if (round(file['image'].size / (1024*1024.0), 2) + images_size) >= profile[0].plan.space_limit:
+        if (round(file['image'].size / (1024*1024.0), 2) + images_size) >= profile.plan.space_limit:
             messages.error(request, f'Uploading selected image will exceed the allowed space')
             return redirect(redirect_url)
         
-        file_name, file_extension = file['image'].name.split('.', 1)
-        file_name = f"{file_name}{str(datetime.now())}"
-        hashed_file_name = sha256(file_name.encode('utf-8')).hexdigest()
-        new_file_name = f"{hashed_file_name}.{file_extension}"
+        image_name, image_extension = file['image'].name.rsplit('.', 1)
+        image_name = f"{image_name}{str(datetime.now())}"
+        hashed_image_name = sha256(image_name.encode('utf-8')).hexdigest()
+        new_image_name = f"{hashed_image_name}.{image_extension}"
         
-        file_with_changed_name = InMemoryUploadedFile(file = file['image'].file, field_name=file['image'].field_name, content_type=file['image'].content_type, size=file['image'].size, charset=file['image'].charset, content_type_extra=file['image'].content_type_extra,
-            name=new_file_name)
-        file['image'] = file_with_changed_name
+        image = file['image']
+        new_image = InMemoryUploadedFile(
+            name=new_image_name,
+            file=image.file,
+            field_name=image.field_name,
+            content_type=image.content_type,
+            size=image.size,
+            charset=image.charset,
+            content_type_extra=image.content_type_extra)
+        
+        file['image'] = new_image
         data['user'] = request.user
         data['is_private'] = is_private
         form = ImageForm(data, file)
         
         if form.is_valid():
             form.save()
-            messages.info(request, f'Image uploaded!')
+            messages.info(request, f'Image uploaded')
             return redirect(redirect_url)
-        return redirect(redirect_url)
+        else:
+            messages.error(request, f'Something went wrong')
+            return redirect(redirect_url)
         
     return render(request, 'upload_img.html')
 
 @csrf_protect
 def register(request):
     if request.method == "POST":
+        redirect_url = 'register'
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
         password2 = request.POST['password2']
         if username == '' or email == '' or password == '' or password2 == '':
             messages.error(request, f'One or more fields are empty!')
-            return redirect('register')
-        if password == password2:
-            if User.objects.filter(username=username).exists():
-                messages.error(request, f'Username {username} already exists!')
-                return redirect('register')
-            else:
-                if User.objects.filter(email=email).exists():
-                    messages.error(request, f'This {email} email is taken!')
-                    return redirect('register')
-                else:
-                    try:
-                        validate_password(password)
-                    except ValidationError as e:
-                        for error in e:
-                            messages.error(request, error)
-                        return redirect('register')
-                    User.objects.create_user(username=username, email=email, password=password)
-                    messages.info(request, f'User {username} registered!')
-                    return redirect('login')
-        else:
-            messages.error(request, 'Passwords are not matching')
-            return redirect('register')
+            return redirect(redirect_url)
+        if password != password2:
+            messages.error(request, 'Passwords are not matching!')
+            return redirect(redirect_url)
+        if User.objects.filter(username=username).exists():
+            messages.error(request, f'This username is taken!')
+            return redirect(redirect_url)
+        if User.objects.filter(email=email).exists():
+            messages.error(request, f'This email is taken!')
+            return redirect(redirect_url)
+        try:
+            validate_password(password)
+        except ValidationError as e:
+            for error in e:
+                messages.error(request, error)
+            return redirect(redirect_url)
+        User.objects.create_user(username=username, email=email, password=password)
+        messages.info(request, f'User {username} registered!')
+        return redirect('login')
     return render(request, 'registration/register.html')
 
 def public_profile(request, username):
     values = ('user__username', 'image', 'date')
+    per_page = 9
     images = Image.objects.filter(user__username=username, is_private=False).values(*values)
-    paginator = Paginator(images, per_page=9)
+    paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')
     paged_images = paginator.get_page(page_number)
     context ={
@@ -165,11 +161,4 @@ def set_profile_photo(request):
     image = Image.objects.get(id=image_id)
     profile.photo = image
     profile.save()
-
-def get_images_size(images): # size in MB
-    images_size = 0
-    for image in images:
-        images_size = images_size + os.path.getsize(f"{os.path.abspath(os.path.dirname(__name__))}/Imager/media/{image['image']}")
-    images_size = round(images_size / (1024*1024.0), 2)
-    return images_size
 
