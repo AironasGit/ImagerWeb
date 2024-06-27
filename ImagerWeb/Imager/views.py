@@ -22,6 +22,7 @@ def index(request):
     values = ('user__username', 'image', 'date')
     per_page = 9
     images = Image.objects.filter(is_private=False).values(*values)
+    #images = Image.objects.filter(is_private=False, date__year='2024', date__month='06', date__day='07').values(*values)
     paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')
     paged_images = paginator.get_page(page_number)
@@ -31,13 +32,35 @@ def index(request):
     return render(request, template_name='index.html', context=context)
 
 def image(request, image_name):
-    values = ('user__id', 'user__username', 'image', 'date', 'id')
-    image = Image.objects.filter(image=image_name).values(*values)
+    values = ('user__id', 'user__username', 'image', 'date', 'id', 'is_private')
+    image = Image.objects.filter(image=image_name).values(*values).first()
     context ={
-        'image': image[0]
+        'image': image
     }
     return render(request, template_name='image.html', context=context)
 
+def edit_image(request, image_name):
+    image = Image.objects.filter(image=image_name).first()
+    form =ImageForm(instance=image)
+    context ={
+        'form': form
+    }
+    if request.method == 'POST':
+        is_private = False
+        if request.POST.get('is_private', False):
+            is_private = True
+        new_form = ImageForm(request.POST, instance=image)
+        if new_form.is_valid():
+            update_entry = new_form.save(commit=False)
+            update_entry.user = request.user
+            update_entry.is_private = is_private
+            update_entry.image = image.image
+            update_entry.save()
+            messages.info(request, f'Updated!')
+            return redirect(f'{image_name}')
+    return render(request, template_name='edit_image.html', context=context)
+
+    
 @login_required(login_url='../accounts/login/')
 def profile(request):
     if request.method == 'POST':
@@ -68,7 +91,7 @@ def upload_img(request):
         data, file = request.POST.copy(), request.FILES.copy()
         images = Image.objects.filter(user_id=request.user.id).values('image')
         profile = Profile.objects.filter(user=request.user.id).first()
-        images_count = len(image)
+        images_count = len(images)
         images_size = get_images_size(images)
         
         if images_count >= profile.plan.image_limit:
@@ -119,25 +142,30 @@ def register(request):
         email = request.POST['email']
         password = request.POST['password']
         password2 = request.POST['password2']
+        flag = False
         if username == '' or email == '' or password == '' or password2 == '':
             messages.error(request, f'One or more fields are empty!')
-            return redirect(redirect_url)
+            flag = True
         if password != password2:
             messages.error(request, 'Passwords are not matching!')
-            return redirect(redirect_url)
+            flag = True
         if User.objects.filter(username=username).exists():
             messages.error(request, f'This username is taken!')
-            return redirect(redirect_url)
+            flag = True
         if User.objects.filter(email=email).exists():
             messages.error(request, f'This email is taken!')
-            return redirect(redirect_url)
+            flag = True
         try:
             validate_password(password)
         except ValidationError as e:
             for error in e:
                 messages.error(request, error)
+            flag = True
+        
+        if flag:
             return redirect(redirect_url)
-        User.objects.create_user(username=username, email=email, password=password)
+        
+        #User.objects.create_user(username=username, email=email, password=password)
         messages.info(request, f'User {username} registered!')
         return redirect('login')
     return render(request, 'registration/register.html')

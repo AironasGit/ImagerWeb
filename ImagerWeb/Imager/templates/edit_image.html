@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block 'content' %}
+<form method="post">
+    {% csrf_token %}
+    <img src="/media/{{ form.image.value }}" alt="">
+    <br>
+    {{ form.is_private }} {{ form.is_private.label }}
+    <br>
+    <button type="submit" class="btn btn-primary register-button">Update</button>
+</form>
+{% endblock %}
