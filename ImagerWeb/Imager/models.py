@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.forms import User
+from hashlib import sha256
+from datetime import datetime
 
 # Create your models here.
 
@@ -15,6 +17,11 @@ class Image(models.Model):
         else:
             access = 'Public'
         return f"{self.image.name} ({self.user.username}) {access}"
+    
+    def save(self, *args, **kwargs):
+        self.image.name = sha256(f"{self.image.name}{str(datetime.now())}".encode('utf-8')).hexdigest() + '.' + self.image.name.rsplit('.', 1)[-1]
+
+        super().save(*args, **kwargs)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

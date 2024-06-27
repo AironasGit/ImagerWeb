@@ -32,7 +32,7 @@ def index(request):
     return render(request, template_name='index.html', context=context)
 
 def image(request, image_name):
-    values = ('user__id', 'user__username', 'image', 'date', 'id', 'is_private')
+    values = ('user__id', 'user__username', 'image', 'date', 'id')
     image = Image.objects.filter(image=image_name).values(*values).first()
     context ={
         'image': image
@@ -104,22 +104,6 @@ def upload_img(request):
             messages.error(request, f'Uploading selected image will exceed the allowed space')
             return redirect(redirect_url)
         
-        image_name, image_extension = file['image'].name.rsplit('.', 1)
-        image_name = f"{image_name}{str(datetime.now())}"
-        hashed_image_name = sha256(image_name.encode('utf-8')).hexdigest()
-        new_image_name = f"{hashed_image_name}.{image_extension}"
-        
-        image = file['image']
-        new_image = InMemoryUploadedFile(
-            name=new_image_name,
-            file=image.file,
-            field_name=image.field_name,
-            content_type=image.content_type,
-            size=image.size,
-            charset=image.charset,
-            content_type_extra=image.content_type_extra)
-        
-        file['image'] = new_image
         data['user'] = request.user
         data['is_private'] = is_private
         form = ImageForm(data, file)
