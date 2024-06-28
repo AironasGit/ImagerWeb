@@ -4,6 +4,9 @@ from hashlib import sha256
 from datetime import datetime
 import os
 
+from django.contrib import admin
+from django.db import transaction
+
 # Create your models here.
 
 class Image(models.Model):
@@ -19,7 +22,7 @@ class Image(models.Model):
         return f"{self.image.name} | {self.user.username} | {access}"
     
     def save(self, *args, **kwargs):
-        try:
+        try: # This block deletes previous image when the image field is updated with a new image
             this = Image.objects.get(id=self.id)
             if this.image != self.image:
                 this.image.delete()
@@ -31,6 +34,7 @@ class Image(models.Model):
         super().delete(*args, **kwargs)
         if os.path.isfile(self.image.path):
            os.remove(self.image.path)
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

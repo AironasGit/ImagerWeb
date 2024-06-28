@@ -12,8 +12,9 @@
 .profilePhoto{
     display: block;
     margin: auto;
-    width: 50%;
-    border-radius: 100%;
+    max-width: 50%;
+    height: 160px;
+    border-radius: 15%;
 }
 .profileInfo{
     display: grid;
