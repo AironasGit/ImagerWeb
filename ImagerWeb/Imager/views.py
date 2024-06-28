@@ -19,8 +19,8 @@ from .utils import get_images_size
 # Create your views here.
 
 def index(request):
-    values = ('user__username', 'image', 'date')
-    per_page = 9
+    values = ('user__username', 'image', 'date', 'view_count')
+    per_page = 8
     images = Image.objects.filter(is_private=False).values(*values)
     #images = Image.objects.filter(is_private=False, date__year='2024', date__month='06', date__day='07').values(*values)
     paginator = Paginator(images, per_page=per_page)
@@ -49,17 +49,8 @@ def edit_image(request, image_name):
         is_private = False
         if request.POST.get('is_private', False):
             is_private = True
-        new_form = ImageForm(request.POST, instance=image)
         Image.objects.filter(image=image_name).update(is_private=is_private)
         return redirect(f'{image_name}')
-        #if new_form.is_valid():
-        #    update_entry = new_form.save(commit=False)
-        #    update_entry.user = request.user
-        #    update_entry.is_private = is_private
-        #    update_entry.image = image.image
-        #    update_entry.save()
-        #    messages.info(request, f'Updated!')
-        #    return redirect(f'{image_name}')
     return render(request, template_name='edit_image.html', context=context)
 
     
@@ -68,7 +59,7 @@ def profile(request):
     if request.method == 'POST':
         set_profile_photo(request)
     values = ('user__username', 'image', 'date', 'is_private', 'id')
-    per_page = 9
+    per_page = 6
     images = Image.objects.filter(user_id=request.user.id).values(*values)
     profile = Profile.objects.filter(user_id=request.user.id).first()
     paginator = Paginator(images, per_page=per_page)
@@ -108,6 +99,7 @@ def upload_img(request):
         
         data['user'] = request.user
         data['is_private'] = is_private
+        #data['description'] = request.POST.get('description')
         form = ImageForm(data, file)
         
         if form.is_valid():

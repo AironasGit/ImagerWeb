@@ -9,8 +9,13 @@
             <div class="imageContainer">
                 <img src="/media/{{item.image}}"/>
             </div>
-            <p>Owner: {{item.user__username}}</p>
             <p>Date: {{item.date}}</p>
+            <p>Owner: {{item.user__username}}</p>
+            {% if item.view_count == 1 %}
+                <p>{{item.view_count}} View</p>
+            {% else %}
+                <p>{{item.view_count}} Views</p>
+            {% endif %}
         </div>
     </form>
     {% endfor %}

@@ -14,6 +14,9 @@ class Image(models.Model):
     image = models.ImageField('Image', upload_to='')
     date = models.DateTimeField(verbose_name='Date', auto_now_add=True)
     is_private = models.BooleanField(verbose_name='Is Private', default=True)
+    description = models.TextField(verbose_name='Description', null=True, blank=True)
+    view_count = models.IntegerField(verbose_name='View Count', default=0)
+    
     def __str__(self):
         if self.is_private:
             access = 'Private'
@@ -26,6 +29,9 @@ class Image(models.Model):
             this = Image.objects.get(id=self.id)
             if this.image != self.image:
                 this.image.delete()
+            else:
+                super().save(*args, **kwargs)
+                return
         except: pass
         self.image.name = sha256(f"{self.image.name}{str(datetime.now())}".encode('utf-8')).hexdigest() + '.' + self.image.name.rsplit('.', 1)[-1]
         super().save(*args, **kwargs)
