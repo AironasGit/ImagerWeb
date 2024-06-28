@@ -55,6 +55,7 @@ footer{
   height: 160px;
 }
 .imageCard{
+  display: grid;
   width: 300px;
   margin: 5px;
   border: 1px solid black;

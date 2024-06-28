@@ -22,6 +22,11 @@
     display: block;
     margin: auto;
 }
+.setProfile{
+    display: block;
+    margin-left: auto; 
+    margin-right: auto;
+}
 .imagesNavBar{
     display: flex;
 }

@@ -16,10 +16,10 @@
     </form>
     {% if image.user__id == user.id %}
         <br>
-        <form method="post" action="{% url 'set_profile_photo' %}">
+        <form action="{% url 'edit_image' image.image %}">
             {% csrf_token %}
             <input name="imageId" type="hidden" value="{{image.id}}">
-            <button type="submit" class="btn btn-primary"  id="btn">Set as profile photo</button>
+            <button type="submit" class="btn btn-primary"  id="btn">Edit Image</button>
         </form>
     {% endif %}
 {% endblock %}

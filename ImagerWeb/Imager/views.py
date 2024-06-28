@@ -41,7 +41,7 @@ def image(request, image_name):
 
 def edit_image(request, image_name):
     image = Image.objects.filter(image=image_name).first()
-    form =ImageForm(instance=image)
+    form = ImageForm(instance=image)
     context ={
         'form': form
     }
@@ -50,14 +50,16 @@ def edit_image(request, image_name):
         if request.POST.get('is_private', False):
             is_private = True
         new_form = ImageForm(request.POST, instance=image)
-        if new_form.is_valid():
-            update_entry = new_form.save(commit=False)
-            update_entry.user = request.user
-            update_entry.is_private = is_private
-            update_entry.image = image.image
-            update_entry.save()
-            messages.info(request, f'Updated!')
-            return redirect(f'{image_name}')
+        Image.objects.filter(image=image_name).update(is_private=is_private)
+        return redirect(f'{image_name}')
+        #if new_form.is_valid():
+        #    update_entry = new_form.save(commit=False)
+        #    update_entry.user = request.user
+        #    update_entry.is_private = is_private
+        #    update_entry.image = image.image
+        #    update_entry.save()
+        #    messages.info(request, f'Updated!')
+        #    return redirect(f'{image_name}')
     return render(request, template_name='edit_image.html', context=context)
 
     
@@ -65,7 +67,7 @@ def edit_image(request, image_name):
 def profile(request):
     if request.method == 'POST':
         set_profile_photo(request)
-    values = ('user__username', 'image', 'date', 'is_private')
+    values = ('user__username', 'image', 'date', 'is_private', 'id')
     per_page = 9
     images = Image.objects.filter(user_id=request.user.id).values(*values)
     profile = Profile.objects.filter(user_id=request.user.id).first()

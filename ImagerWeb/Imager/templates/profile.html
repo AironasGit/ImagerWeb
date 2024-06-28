@@ -24,19 +24,24 @@
         </div>
         <div class="mainContainer">
             {% for item in images %}
-            <form action="get">
                 <div class="imageCard" onclick="location.href='../image/{{item.image}}';">
-                    <div class="imageContainer">
-                        <img src="/media/{{item.image}}"/>
-                    </div>
-                    {% if item.is_private %}
-                        <p>Private</p>
-                    {% else %}
-                        <p>Public</p>
-                    {% endif %}
-                    <p>Date: {{item.date}}</p>
+                    <form action="get">
+                        <div class="imageContainer">
+                            <img src="/media/{{item.image}}"/>
+                        </div>
+                        {% if item.is_private %}
+                            <p>Private</p>
+                        {% else %}
+                            <p>Public</p>
+                        {% endif %}
+                        <p>Date: {{item.date}}</p>
+                    </form>
+                    <form class="setProfile" method="post" action="{% url 'profile' %}">
+                        {% csrf_token %}
+                        <input name="imageId" type="hidden" value="{{item.id}}">
+                        <button type="submit" class="btn btn-primary"  id="btn">Set as profile photo</button>
+                    </form>
                 </div>
-            </form>
             {% endfor %}
         </div>
         {% if images.has_other_pages %}
