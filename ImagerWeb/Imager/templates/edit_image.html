@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block 'content' %}
+{% include "messages.html" %}
 <form method="post">
     {% csrf_token %}
     <img src="/media/{{ form.image.value }}" alt="" style="max-width: 30%;">

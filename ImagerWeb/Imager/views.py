@@ -51,6 +51,7 @@ def edit_image(request, image_name):
         if request.POST.get('is_private', False):
             is_private = True
         Image.objects.filter(image=image_name).update(is_private=is_private, description=request.POST.get('description'))
+        messages.info(request, f'Image updated')
         return redirect(f'{image_name}')
     return render(request, template_name='edit_image.html', context=context)
 
@@ -59,6 +60,8 @@ def edit_image(request, image_name):
 def profile(request):
     if request.method == 'POST':
         set_profile_photo(request)
+        messages.info(request, f'Profile picture set!')
+        return redirect(f'profile')
     values = ('user__username', 'image', 'date', 'is_private', 'id')
     per_page = 6
     images = Image.objects.filter(user_id=request.user.id).values(*values)

@@ -8,21 +8,7 @@
     {% endif %}
   {% endif %}
   <div class="container login">
-    <div class="container mt-4">
-      <div class="row">
-          <div class="col-sm">
-              {% if messages %}
-              {% for message in messages %}
-              <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'info' %}success{% endif %}"
-                   role="alert">
-                  {{ message }}
-              </div>
-              {% endfor %}
-              {% endif %}
-              {% block "content" %}{% endblock %}
-          </div>
-      </div>
-    </div>
+    {% include "messages.html" %}
     <h3>Image</h3><br/>
     <form enctype="multipart/form-data" method="post">
         {% csrf_token %}
