@@ -32,8 +32,9 @@ def index(request):
     return render(request, template_name='index.html', context=context)
 
 def image(request, image_name):
-    values = ('user__id', 'user__username', 'image', 'date', 'id')
+    values = ('user__id', 'user__username', 'image', 'date', 'id', 'view_count', 'description')
     image = Image.objects.filter(image=image_name).values(*values).first()
+    Image.objects.filter(image=image_name).update(view_count=image['view_count']+1)
     context ={
         'image': image
     }
@@ -49,7 +50,7 @@ def edit_image(request, image_name):
         is_private = False
         if request.POST.get('is_private', False):
             is_private = True
-        Image.objects.filter(image=image_name).update(is_private=is_private)
+        Image.objects.filter(image=image_name).update(is_private=is_private, description=request.POST.get('description'))
         return redirect(f'{image_name}')
     return render(request, template_name='edit_image.html', context=context)
 
@@ -99,7 +100,6 @@ def upload_img(request):
         
         data['user'] = request.user
         data['is_private'] = is_private
-        #data['description'] = request.POST.get('description')
         form = ImageForm(data, file)
         
         if form.is_valid():

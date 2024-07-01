@@ -9,3 +9,26 @@ button#btn{
     display: block;
     margin:auto
 }
+.content{
+    display: flex;
+    max-width: 30%;
+    margin: auto;
+}
+.content .btn{
+    margin: auto;
+}
+.imgInfo{
+    display: flex;
+}
+.imgInfo div{
+    margin: auto;
+}
+.imgInfo .form-group{
+    margin-right: 5px;
+}
+.imgInfo .other{
+    margin-left: 5px;
+}
+.other p{
+    margin: 0;
+}

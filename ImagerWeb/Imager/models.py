@@ -14,7 +14,7 @@ class Image(models.Model):
     image = models.ImageField('Image', upload_to='')
     date = models.DateTimeField(verbose_name='Date', auto_now_add=True)
     is_private = models.BooleanField(verbose_name='Is Private', default=True)
-    description = models.TextField(verbose_name='Description', null=True, blank=True)
+    description = models.TextField(verbose_name='Description', null=True, blank=True, max_length=100)
     view_count = models.IntegerField(verbose_name='View Count', default=0)
     
     def __str__(self):

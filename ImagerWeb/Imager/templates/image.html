@@ -6,20 +6,35 @@
     <link rel="stylesheet" href="{% static 'css/image.css' %}">
 {% endblock %}
 {% block 'content' %}
+    <div class="imgInfo">
+        <div class="form-group">
+            <textarea readonly name="description" rows="4" cols="26">{{image.description}}</textarea>
+        </div>
+        <div class="other">
+            <p>{{image.date}}</p>
+            <p>{{image.user__username}}</p>
+            {% if image.view_count == 1 %}
+                <p>{{image.view_count}} View</p>
+            {% else %}
+                <p>{{image.view_count}} Views</p>
+            {% endif %}
+        </div>
+    </div>
     <form action="get">
         <img class="mainImage" src="/media/{{image.image}}"/>
     </form>
     <br>
-    <form method="post" action="{% url 'public_profile' image.user__username %}">
-        {% csrf_token %}
-        <button class="btn btn-primary" id="btn">{{image.user__username}} profile</button>
-    </form>
-    {% if image.user__id == user.id %}
-        <br>
-        <form action="{% url 'edit_image' image.image %}">
+    <div class="content">
+        <form class="btn" method="post" action="{% url 'public_profile' image.user__username %}">
             {% csrf_token %}
-            <input name="imageId" type="hidden" value="{{image.id}}">
-            <button type="submit" class="btn btn-primary"  id="btn">Edit Image</button>
+            <button class="btn btn-primary" id="btn">{{image.user__username}} profile</button>
         </form>
-    {% endif %}
+        {% if image.user__id == user.id %}
+            <form class="btn" action="{% url 'edit_image' image.image %}">
+                {% csrf_token %}
+                <input name="imageId" type="hidden" value="{{image.id}}">
+                <button type="submit" class="btn btn-primary"  id="btn">Edit Image</button>
+            </form>
+        {% endif %}
+    </div>
 {% endblock %}

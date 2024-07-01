@@ -2,9 +2,12 @@
 {% block 'content' %}
 <form method="post">
     {% csrf_token %}
-    <img src="/media/{{ form.image.value }}" alt="">
+    <img src="/media/{{ form.image.value }}" alt="" style="max-width: 30%;">
     <br>
     {{ form.is_private }} {{ form.is_private.label }}
+    <div class="form-group">
+        <textarea name="description" rows="4" cols="26" maxlength="100">{{form.description.value}}</textarea>
+    </div>
     <br>
     <button type="submit" class="btn btn-primary register-button">Update</button>
 </form>

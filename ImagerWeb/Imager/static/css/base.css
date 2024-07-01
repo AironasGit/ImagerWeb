@@ -103,3 +103,6 @@ footer{
 .btn-group .button:hover {
   background-color: #5b8ea8;
 }
+textarea {
+  resize: none;
+}
