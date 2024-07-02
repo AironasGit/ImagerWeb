@@ -1,22 +1,21 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
 from .models import Image
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth.forms import User
-from .models import Image, Profile, Plan
+from .models import Image, Profile
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from datetime import datetime
 from django.core.paginator import Paginator
 from .forms import ImageForm
-from django.core.files.uploadedfile import InMemoryUploadedFile
-from hashlib import sha256
-from datetime import datetime
 from django.db.models import Q
 from .utils import get_images_size
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.contrib.auth import authenticate
+from rest_framework import status
 # Create your views here.
 
 def index(request):
@@ -176,3 +175,10 @@ def set_profile_photo(request):
     profile.photo = image
     profile.save()
 
+class UploadImageAPIView(APIView):
+    def post(self, request):
+        user = authenticate(username=request.data['username'], password=request.data['password'])
+        if user is not None:
+            user = User.objects.filter(username=request.data['username']).first()
+            return Response({'someData': [user.id], "Sucsses":"Login SucssesFully"}, status=status.HTTP_201_CREATED )
+        return Response({'Massage': 'Invalid Username and Password'}, status=401)

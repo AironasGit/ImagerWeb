@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.urls import path, include
 from . import views
 
@@ -12,4 +11,7 @@ urlpatterns = [
     path('public_profile/<str:username>', views.public_profile, name='public_profile'),
     path('profile/', views.set_profile_photo, name='set_profile_photo'),
     path('edit_image/<str:image_name>', views.edit_image, name='edit_image'),
+    
+    #API
+    path('auth/', views.UploadImageAPIView.as_view(), name='auth'),
 ]
