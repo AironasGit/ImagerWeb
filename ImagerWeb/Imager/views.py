@@ -157,7 +157,7 @@ def register(request):
 
 def public_profile(request, username):
     values = ('user__username', 'image', 'date')
-    per_page = 9
+    per_page = 8
     images = Image.objects.filter(user__username=username, is_private=False).values(*values)
     paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')

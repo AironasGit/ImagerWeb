@@ -29,12 +29,5 @@
             {% csrf_token %}
             <button class="btn btn-primary" id="btn">{{image.user__username}} profile</button>
         </form>
-        {% if image.user__id == user.id %}
-            <form class="btn" action="{% url 'edit_image' image.image %}">
-                {% csrf_token %}
-                <input name="imageId" type="hidden" value="{{image.id}}">
-                <button type="submit" class="btn btn-primary"  id="btn">Edit Image</button>
-            </form>
-        {% endif %}
     </div>
 {% endblock %}

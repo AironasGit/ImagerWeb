@@ -37,11 +37,18 @@
                         {% endif %}
                         <p>Date: {{item.date}}</p>
                     </form>
-                    <form class="setProfile" method="post" action="{% url 'profile' %}">
-                        {% csrf_token %}
-                        <input name="imageId" type="hidden" value="{{item.id}}">
-                        <button type="submit" class="btn btn-primary"  id="btn">Set as profile photo</button>
-                    </form>
+                    <div style="display: flex;">
+                        <form class="setProfile" method="post" action="{% url 'profile' %}">
+                            {% csrf_token %}
+                            <input name="imageId" type="hidden" value="{{item.id}}">
+                            <button type="submit" class="btn btn-primary"  id="btn">Set as profile</button>
+                        </form>
+                        <form class="setProfile" class="btn" action="{% url 'edit_image' item.image %}">
+                            {% csrf_token %}
+                            <input name="imageId" type="hidden" value="{{image.id}}">
+                            <button type="submit" class="btn btn-primary"  id="btn">Edit Image</button>
+                        </form>
+                    </div>
                 </div>
             {% endfor %}
         </div>
