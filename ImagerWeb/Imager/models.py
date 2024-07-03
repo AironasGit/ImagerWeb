@@ -3,10 +3,6 @@ from django.contrib.auth.forms import User
 from hashlib import sha256
 from datetime import datetime
 import os
-
-from django.contrib import admin
-from django.db import transaction
-
 # Create your models here.
 
 class Image(models.Model):

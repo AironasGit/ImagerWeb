@@ -13,5 +13,6 @@ urlpatterns = [
     path('edit_image/<str:image_name>', views.edit_image, name='edit_image'),
     
     #API
-    path('auth/', views.UploadImageAPIView.as_view(), name='auth'),
+    path('api/upload_img/', views.UploadImageAPIView.as_view(), name='api_upload_img'),
+    path('api/validate_user/', views.ValidateUserAPIView.as_view(), name='api_validate_user'),
 ]

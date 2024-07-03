@@ -3,7 +3,7 @@ from .models import Image
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth.forms import User
-from .models import Image, Profile
+from .models import Image, Profile, Plan
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.contrib.auth.password_validation import validate_password
@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework import status
-# Create your views here.
+from django.utils.datastructures import MultiValueDictKeyError
 
 def index(request):
     values = ('user__username', 'image', 'date', 'view_count')
@@ -177,8 +177,62 @@ def set_profile_photo(request):
 
 class UploadImageAPIView(APIView):
     def post(self, request):
+        args = ('username', 'password', 'is_private', 'description')
+        flag = False
+        missings_args = []
+        data, file = request.POST.copy(), request.FILES.copy()
+        
+        for arg in args:
+            try:
+                data[arg] 
+            except MultiValueDictKeyError as e:
+                flag = True
+                missings_args.append(e.args[0])
+        if flag:
+            return Response({'Missing args error': missings_args}, status=status.HTTP_400_BAD_REQUEST)
+        if not file.get('image', False):
+            return Response({'Massage': 'No image was sent'}, status=status.HTTP_400_BAD_REQUEST)
+        
         user = authenticate(username=request.data['username'], password=request.data['password'])
-        if user is not None:
-            user = User.objects.filter(username=request.data['username']).first()
-            return Response({'someData': [user.id], "Sucsses":"Login SucssesFully"}, status=status.HTTP_201_CREATED )
-        return Response({'Massage': 'Invalid Username and Password'}, status=401)
+        if user is None:
+            return Response({'Massage': 'Invalid Username and Password'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        images = Image.objects.filter(user_id=user.id).values('image')
+        profile = Profile.objects.filter(user=user.id).first()
+        images_count = len(images)
+        images_size = get_images_size(images)
+        if images_count >= profile.plan.image_limit:
+            return Response({'Massage': 'You have reached the limit of the images you can have'}, status=status.HTTP_400_BAD_REQUEST)
+        if (round(file['image'].size / (1024*1024.0), 2) + images_size) >= profile.plan.space_limit:
+            return Response({'Massage': 'Uploading selected image will exceed the allowed space'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        data['user'] = user
+        form = ImageForm(data, file)
+        if not form.is_valid():
+            return Response({'Massage': 'Something went wrong'}, status=status.HTTP_400_BAD_REQUEST)
+
+        form.save()
+        return Response({ "Success":"Image uploaded"}, status=status.HTTP_200_OK)
+    
+class ValidateUserAPIView(APIView):
+    def post(self, request):
+        args = ('username', 'password')
+        flag = False
+        missings_args = []
+        data = request.data.copy()
+        
+        for arg in args:
+            try:
+                data[arg] 
+            except MultiValueDictKeyError as e:
+                flag = True
+                missings_args.append(e.args[0])
+        if flag:
+            return Response({'Missing args error': missings_args}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = authenticate(username=data['username'], password=data['password'])
+        if user is None:
+            return Response({'Massage': 'Invalid Username and Password'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        return Response({ "Success":"User is valid"}, status=status.HTTP_200_OK)
+            
