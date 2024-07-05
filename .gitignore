@@ -5,6 +5,7 @@
 __pycache__
 db.sqlite3
 media
+my_settings.py
 
 # Visual Studio Code # 
 .vscode/* 

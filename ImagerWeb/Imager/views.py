@@ -220,6 +220,7 @@ class UploadImageAPIView(APIView):
         data['user'] = user
         form = ImageForm(data, file)
         if not form.is_valid():
+            print(file)
             return Response({'Massage': 'Something went wrong'}, status=status.HTTP_400_BAD_REQUEST)
 
         form.save()
