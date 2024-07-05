@@ -107,11 +107,17 @@ textarea {
   resize: none;
 }
 
-.searchBar form{
+.searchBar .searchForm{
   width: 400px;
   display: block;
   margin: auto;
+  margin-right: 0;
 }
+.searchBar .sortForm{
+  margin: auto;
+  margin-left: 0;
+}
+
 .searchBar{
   display: flex;
 }

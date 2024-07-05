@@ -3,25 +3,19 @@
 {% block 'header' %} All public images from all users {% endblock %}
 {% block 'content' %}
 <div class="searchBar">
-    <form method="POST" onsubmit="putCookie('query', 'search')">
+    <form class="searchForm" method="POST" onsubmit="putCookie('query', 'search')">
         {% csrf_token %}
         <input id="search" type="search" name="query" placeholder="{% if query == '' %} Search... {% endif %}" value="{% if query != '' %}{{query}}{% endif %}">
     </form>
-    <form name="viewsForm" method="POST">
+    <form class="sortForm" name="sortForm" method="POST">
         {% csrf_token %}
-        <p style="margin: 0;">Sort by views:</p>
-        <select name="views" id="views" onchange="viewsForm.submit(); putCookie('views_option', 'views')">
-            {% if views_sort_option == 'asc' %}
-                <option value="asc" selected>Ascending</option>
-                <option value="desc" >Descending</option>
-            {% elif views_sort_option == 'desc' %}
-                <option value="asc" >Ascending</option>
-                <option value="desc" selected>Descending</option>
-            {% else %}
-                <option value="asc" >Ascending</option>
-                <option value="desc" selected>Descending</option>
-            {% endif %}
-            </select>
+        <p style="margin: 0;">Sort by:</p>
+        <select name="sort" id="sort" onchange="sortForm.submit(); putCookie('sort_option', 'sort')">
+            <option value="views_asc" {% if views_sort_option == 'views_asc' %} selected {% endif %}>Views ascending</option>
+            <option value="views_desc" {% if views_sort_option == 'views_desc' %} selected {% endif %}>Views descending</option>
+            <option value="date_asc" {% if views_sort_option == 'date_asc' %} selected {% endif %}>Date ascending</option>
+            <option value="date_desc" {% if views_sort_option == 'date_desc' %} selected {% endif %}>Date descending</option>
+        </select>
     </form>
 </div>
 <br>
