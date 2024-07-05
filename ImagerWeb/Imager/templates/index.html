@@ -3,17 +3,25 @@
 {% block 'header' %} All public images from all users {% endblock %}
 {% block 'content' %}
 <div class="searchBar">
-    <form method="POST" onsubmit="putCookie()">
+    <form method="POST" onsubmit="putCookie('query', 'search')">
         {% csrf_token %}
         <input id="search" type="search" name="query" placeholder="{% if query == '' %} Search... {% endif %}" value="{% if query != '' %}{{query}}{% endif %}">
-        <script>
-            function putCookie()
-            {
-                value = document.getElementById("search").value
-                document.cookie = "query" + "=" + value;
-                return true;
-            }
-        </script>
+    </form>
+    <form name="viewsForm" method="POST">
+        {% csrf_token %}
+        <p style="margin: 0;">Sort by views:</p>
+        <select name="views" id="views" onchange="viewsForm.submit(); putCookie('views_option', 'views')">
+            {% if views_sort_option == 'asc' %}
+                <option value="asc" selected>Ascending</option>
+                <option value="desc" >Descending</option>
+            {% elif views_sort_option == 'desc' %}
+                <option value="asc" >Ascending</option>
+                <option value="desc" selected>Descending</option>
+            {% else %}
+                <option value="asc" >Ascending</option>
+                <option value="desc" selected>Descending</option>
+            {% endif %}
+            </select>
     </form>
 </div>
 <br>
@@ -50,4 +58,12 @@
         {% endfor %}
     </ul>
 {% endif %}
+<script>
+    function putCookie(name, elementId)
+    {
+        value = document.getElementById(elementId).value
+        document.cookie = name + "=" + value;
+        return true;
+    }
+</script>
 {% endblock %}

@@ -20,10 +20,13 @@ from django.utils.datastructures import MultiValueDictKeyError
 
 def index(request):
     values = ('user__username', 'image', 'date', 'view_count')
-    query = request.COOKIES.get('query')
-    if query == None:
-        query = ''
-    images = Image.objects.filter(is_private=False).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query))
+    query = request.COOKIES.get('query', '')
+    views_sort_option = request.COOKIES.get('views_option', 'desc')
+    if views_sort_option == 'asc':
+        views_sort = 'view_count'
+    else:
+        views_sort = '-view_count'
+    images = Image.objects.filter(is_private=False).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query)).order_by(views_sort)
     per_page = 8
     #images = Image.objects.filter(is_private=False, date__year='2024', date__month='06', date__day='07').values(*values)
     paginator = Paginator(images, per_page=per_page)
@@ -31,7 +34,8 @@ def index(request):
     paged_images = paginator.get_page(page_number)
     context ={
         'images': paged_images,
-        'query': query
+        'query': query,
+        'views_sort_option': views_sort_option
     }
     return render(request, template_name='index.html', context=context)
 
