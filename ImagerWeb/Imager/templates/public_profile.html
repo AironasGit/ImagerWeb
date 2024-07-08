@@ -8,17 +8,21 @@ blic Profile {% endblock %}
 {% endblock %}
 {% block 'content' %}
 <div class="mainContainer">
-    {% for item in images %}
-    <form action="get">
-        <div class="imageCard" onclick="location.href='../image/{{item.image}}';">
-            <div class="imageContainer">
-                <img src="/media/{{item.image}}"/>
+    {% if images %}
+        {% for item in images %}
+        <form action="get">
+            <div class="imageCard" onclick="location.href='../image/{{item.image}}';">
+                <div class="imageContainer">
+                    <img src="/media/{{item.image}}"/>
+                </div>
+                <br>
+                <p>Date: {{item.date}}</p>
             </div>
-            <br>
-            <p>Date: {{item.date}}</p>
-        </div>
-    </form>
-    {% endfor %}
+        </form>
+        {% endfor %}
+    {% else %}
+        <h1 class="noImagesText">No Images Found</h1>
+    {% endif %}
 </div>
 {% if images.has_other_pages %}
     <ul class="pagination pagination-sm justify-content-center">

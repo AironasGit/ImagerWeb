@@ -20,22 +20,26 @@
 </div>
 <br>
 <div class="mainContainer">
-    {% for item in images %}
-    <form action="get">
-        <div class="imageCard" onclick="location.href='image/{{item.image}}';">
-            <div class="imageContainer">
-                <img src="/media/{{item.image}}"/>
-            </div>
-            <p>Date: {{item.date}}</p>
-            <p>Owner: {{item.user__username}}</p>
-            {% if item.view_count == 1 %}
-                <p>{{item.view_count}} View</p>
-            {% else %}
-                <p>{{item.view_count}} Views</p>
-            {% endif %}
-        </div>
-    </form>
-    {% endfor %}
+    {% if images %}
+        {% for item in images %}
+            <form action="get">
+                <div class="imageCard" onclick="location.href='image/{{item.image}}';">
+                    <div class="imageContainer">
+                        <img src="/media/{{item.image}}"/>
+                    </div>
+                    <p>Date: {{item.date}}</p>
+                    <p>Owner: {{item.user__username}}</p>
+                    {% if item.view_count == 1 %}
+                        <p>{{item.view_count}} View</p>
+                    {% else %}
+                        <p>{{item.view_count}} Views</p>
+                    {% endif %}
+                </div>
+            </form>
+        {% endfor %}
+    {% else %}
+        <h1 class="noImagesText">No Images Found</h1>
+    {% endif %}
 </div>
 {% if images.has_other_pages %}
     <ul class="pagination pagination-sm justify-content-center">

@@ -123,12 +123,15 @@ textarea {
 }
   
 input[type=search]{
-width: 400px;
-height: 40px;
-font-size: 16px;
-padding: 0px 20px 0px 40px;
-border-radius: 40px;
-outline: none;
-border: solid gray 2px;
-background: url('Search.png') 7px center no-repeat;
+  width: 400px;
+  height: 40px;
+  font-size: 16px;
+  padding: 0px 20px 0px 40px;
+  border-radius: 40px;
+  outline: none;
+  border: solid gray 2px;
+}
+.noImagesText{
+  display: block;
+  margin: auto;
 }

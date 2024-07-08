@@ -28,33 +28,37 @@
             </form>
         </div>
         <div class="mainContainer">
-            {% for item in images %}
-                <div class="imageCard" onclick="location.href='../image/{{item.image}}';">
-                    <form action="get">
-                        <div class="imageContainer">
-                            <img src="/media/{{item.image}}"/>
+            {% if images %}
+                {% for item in images %}
+                    <div class="imageCard" onclick="location.href='../image/{{item.image}}';">
+                        <form action="get">
+                            <div class="imageContainer">
+                                <img src="/media/{{item.image}}"/>
+                            </div>
+                            {% if item.is_private %}
+                                <p>Private</p>
+                            {% else %}
+                                <p>Public</p>
+                            {% endif %}
+                            <p>Date: {{item.date}}</p>
+                        </form>
+                        <div style="display: flex;">
+                            <form class="setProfile" method="post" action="{% url 'profile' %}">
+                                {% csrf_token %}
+                                <input name="imageId" type="hidden" value="{{item.id}}">
+                                <button type="submit" class="btn btn-primary"  id="btn">Set as profile</button>
+                            </form>
+                            <form class="setProfile" class="btn" action="{% url 'edit_image' item.image %}">
+                                {% csrf_token %}
+                                <input name="imageId" type="hidden" value="{{image.id}}">
+                                <button type="submit" class="btn btn-primary"  id="btn">Edit Image</button>
+                            </form>
                         </div>
-                        {% if item.is_private %}
-                            <p>Private</p>
-                        {% else %}
-                            <p>Public</p>
-                        {% endif %}
-                        <p>Date: {{item.date}}</p>
-                    </form>
-                    <div style="display: flex;">
-                        <form class="setProfile" method="post" action="{% url 'profile' %}">
-                            {% csrf_token %}
-                            <input name="imageId" type="hidden" value="{{item.id}}">
-                            <button type="submit" class="btn btn-primary"  id="btn">Set as profile</button>
-                        </form>
-                        <form class="setProfile" class="btn" action="{% url 'edit_image' item.image %}">
-                            {% csrf_token %}
-                            <input name="imageId" type="hidden" value="{{image.id}}">
-                            <button type="submit" class="btn btn-primary"  id="btn">Edit Image</button>
-                        </form>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <h1 class="noImagesText">No Images Found</h1>
+            {% endif %}
         </div>
         {% if images.has_other_pages %}
             <ul class="pagination pagination-sm justify-content-center">
