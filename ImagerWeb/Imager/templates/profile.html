@@ -9,7 +9,11 @@
 {% include "messages.html" %}
 <div class="profileParent">
     <div class="profileChild" id="one">
-        <img class="profilePhoto" src="{{profile.photo.image.url}}">
+        {% if profile.photo.image.url%}
+            <img class="profilePhoto" src="{{profile.photo.image.url}}">
+        {% else %}
+            <img class="profilePhoto" src="/media/Default.jpg">
+        {% endif %}
         <br>
         <div class="profileInfo">
             <h5 class="detail">Space used: {{images_size}}/{{profile.plan.space_limit}} MB</h5>

@@ -17,7 +17,6 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework import status
 from django.utils.datastructures import MultiValueDictKeyError
-from ..ImagerWeb.my_settings import API_KEY
 
 def index(request):
     values = ('user__username', 'image', 'date', 'view_count')
