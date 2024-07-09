@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from .forms import ImageForm
 from django.db.models import Q
-from .utils import get_images_size
+from .utils import get_images_size, get_sort
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
@@ -25,20 +25,9 @@ def index(request):
     values = ('user__username', 'image', 'date', 'view_count')
     query = request.COOKIES.get('query', '')
     sort_option = request.COOKIES.get('sort_option', 'views_desc')
-    match sort_option:
-        case 'views_asc':
-            sort = 'view_count'
-        case 'views_desc':
-            sort = '-view_count'
-        case 'date_asc':
-            sort = 'date'
-        case 'date_desc':
-            sort = '-date'
-        case _:
-            sort = '-view_count'
+    sort = get_sort(sort_option)
     images = Image.objects.filter(is_private=False).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query)).order_by(sort)
     per_page = 8
-    #images = Image.objects.filter(is_private=False, date__year='2024', date__month='06', date__day='07').values(*values)
     paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')
     paged_images = paginator.get_page(page_number)
@@ -86,11 +75,13 @@ def edit_image(request, image_name):
 def profile(request):
     if request.method == 'POST':
         set_profile_photo(request)
-        messages.info(request, f'Profile picture set!')
-        return redirect(f'profile')
     values = ('user__username', 'image', 'date', 'is_private', 'id')
     per_page = 6
-    images = Image.objects.filter(user_id=request.user.id).values(*values)
+    query = request.COOKIES.get('query', '')
+    sort_option = request.COOKIES.get('sort_option', 'views_desc')
+    sort = get_sort(sort_option)
+    images = Image.objects.filter(user_id=request.user.id).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query)).order_by(sort)
+    all_images = Image.objects.filter(user_id=request.user.id).values(*values)
     profile = Profile.objects.filter(user_id=request.user.id).first()
     paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')
@@ -98,8 +89,10 @@ def profile(request):
     context ={
         'images': paged_images,
         'profile': profile,
-        'images_count': len(images),
-        'images_size': get_images_size(images)
+        'images_count': len(all_images),
+        'images_size': get_images_size(all_images),
+        'query': query,
+        'views_sort_option': sort_option
     }
     return render(request, template_name='profile.html', context=context)
 
@@ -180,22 +173,30 @@ def register(request):
 def public_profile(request, username):
     values = ('user__username', 'image', 'date')
     per_page = 8
-    images = Image.objects.filter(user__username=username, is_private=False).values(*values)
+    query = request.COOKIES.get('query', '')
+    sort_option = request.COOKIES.get('sort_option', 'views_desc')
+    sort = get_sort(sort_option)
+    images = Image.objects.filter(user__username=username, is_private=False).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query)).order_by(sort)
     paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')
     paged_images = paginator.get_page(page_number)
     context ={
-        'images': paged_images
+        'images': paged_images,
+        'query': query,
+        'views_sort_option': sort_option
     }
     return render(request, template_name='public_profile.html', context=context)
 
 
 def set_profile_photo(request):
     profile = Profile.objects.get(user=request.user.id)
-    image_id = request.POST['imageId']
-    image = Image.objects.get(id=image_id)
-    profile.photo = image
-    profile.save()
+    image_id = request.POST.get('imageId')
+    if image_id != None:
+        image = Image.objects.get(id=image_id)
+        profile.photo = image
+        profile.save()
+        messages.info(request, f'Profile picture set!')
+        return redirect(f'profile')
 
 class UploadImageAPIView(APIView):
     def post(self, request):

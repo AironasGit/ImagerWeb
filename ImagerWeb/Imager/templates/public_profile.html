@@ -7,6 +7,7 @@ blic Profile {% endblock %}
     {% endfor %}
 {% endblock %}
 {% block 'content' %}
+{% include "search_bar.html" %}
 <div class="mainContainer">
     {% if images %}
         {% for item in images %}
