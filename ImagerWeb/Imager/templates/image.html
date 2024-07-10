@@ -11,8 +11,9 @@
             <textarea readonly name="description" rows="4" cols="26">{{image.description}}</textarea>
         </div>
         <div class="other">
-            <p>{{image.date}}</p>
-            <p>{{image.user__username}}</p>
+            <p>Title: {{image.title}}</p>
+            <p>Date: {{image.date}}</p>
+            <p>Owner {{image.user__username}}</p>
             {% if image.view_count == 1 %}
                 <p>{{image.view_count}} View</p>
             {% else %}

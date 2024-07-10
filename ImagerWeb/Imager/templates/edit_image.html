@@ -10,6 +10,10 @@
         <textarea name="description" rows="4" cols="26" maxlength="100">{{form.description.value}}</textarea>
     </div>
     <br>
+    <div class="form-group">
+        <input name="title" type="text" maxlength="30" value="{{form.title.value}}"></input>
+    </div>
+    <br>
     <button type="submit" class="btn btn-primary register-button">Update</button>
 </form>
 {% endblock %}

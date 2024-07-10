@@ -22,11 +22,11 @@ from datetime import datetime
 import os
 
 def index(request):
-    values = ('user__username', 'image', 'date', 'view_count')
+    values = ('user__username', 'image', 'date', 'view_count', 'title')
     query = request.COOKIES.get('query', '')
     sort_option = request.COOKIES.get('sort_option', 'views_desc')
     sort = get_sort(sort_option)
-    images = Image.objects.filter(is_private=False).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query)).order_by(sort)
+    images = Image.objects.filter(is_private=False).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query) | Q(title__icontains=query)).order_by(sort)
     per_page = 8
     paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')
@@ -39,7 +39,7 @@ def index(request):
     return render(request, template_name='index.html', context=context)
 
 def image(request, image_name):
-    values = ('user__id', 'user__username', 'image', 'date', 'id', 'view_count', 'description')
+    values = ('user__id', 'user__username', 'image', 'date', 'id', 'view_count', 'description', 'title')
     image = Image.objects.filter(image=image_name).values(*values).first()
     Image.objects.filter(image=image_name).update(view_count=image['view_count']+1)
     context ={
@@ -61,11 +61,11 @@ def edit_image(request, image_name):
             new_image_name = sha256(f"{image_name}{str(datetime.now())}".encode('utf-8')).hexdigest() + '.' + image_name.rsplit('.', 1)[-1]
             old_file = os.path.join(f"{os. getcwd()}\\Imager\\media", image_name)
             new_file = os.path.join(f"{os. getcwd()}\\Imager\\media", new_image_name)
-            Image.objects.filter(image=image_name).update(image=new_image_name, is_private=is_private, description=request.POST.get('description'))
+            Image.objects.filter(image=image_name).update(image=new_image_name, is_private=is_private, description=request.POST.get('description'), title=request.POST.get('title'))
             os.rename(old_file, new_file)
             messages.info(request, f'Image updated')
             return redirect(f'{new_image_name}')
-        Image.objects.filter(image=image_name).update(is_private=is_private, description=request.POST.get('description'))
+        Image.objects.filter(image=image_name).update(is_private=is_private, description=request.POST.get('description'), title=request.POST.get('title'))
         messages.info(request, f'Image updated')
         return redirect(f'{image_name}')
     return render(request, template_name='edit_image.html', context=context)
@@ -75,13 +75,13 @@ def edit_image(request, image_name):
 def profile(request):
     if request.method == 'POST':
         set_profile_photo(request)
-    values = ('user__username', 'image', 'date', 'is_private', 'id')
+    values = ('user__username', 'image', 'date', 'is_private', 'id', 'title')
     per_page = 6
     query = request.COOKIES.get('query', '')
     sort_option = request.COOKIES.get('sort_option', 'views_desc')
     sort = get_sort(sort_option)
-    images = Image.objects.filter(user_id=request.user.id).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query)).order_by(sort)
-    all_images = Image.objects.filter(user_id=request.user.id).values(*values)
+    images = Image.objects.filter(user_id=request.user.id).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query) | Q(title__icontains=query)).order_by(sort)
+    all_images = Image.objects.filter(user_id=request.user.id).values('image')
     profile = Profile.objects.filter(user_id=request.user.id).first()
     paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')
@@ -171,12 +171,12 @@ def register(request):
     return render(request, 'registration/register.html')
 
 def public_profile(request, username):
-    values = ('user__username', 'image', 'date')
+    values = ('user__username', 'image', 'date', 'title')
     per_page = 8
     query = request.COOKIES.get('query', '')
     sort_option = request.COOKIES.get('sort_option', 'views_desc')
     sort = get_sort(sort_option)
-    images = Image.objects.filter(user__username=username, is_private=False).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query)).order_by(sort)
+    images = Image.objects.filter(user__username=username, is_private=False).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query) | Q(title__icontains=query)).order_by(sort)
     paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')
     paged_images = paginator.get_page(page_number)
