@@ -1,19 +1,31 @@
 {% extends 'base.html' %}
+{% block 'extraStatic' %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/edit_image.css' %}">
+{% endblock %}
 {% block 'content' %}
 {% include "messages.html" %}
-<form method="post">
+<form method="post" style="display: block;">
     {% csrf_token %}
     <img src="/media/{{ form.image.value }}" alt="" style="max-width: 30%;">
     <br>
-    {{ form.is_private }} {{ form.is_private.label }}
+    <label for="description">Description</label>
     <div class="form-group">
         <textarea name="description" rows="4" cols="26" maxlength="100">{{form.description.value}}</textarea>
     </div>
     <br>
+    <label for="title">Title</label>
     <div class="form-group">
         <input name="title" type="text" maxlength="30" value="{{form.title.value}}"></input>
     </div>
     <br>
-    <button type="submit" class="btn btn-primary register-button">Update</button>
+    <div style="display: flex;">
+        {{ form.is_private }}
+        <label for="is_private" style="margin-left: 0;">{{ form.is_private.label }}</label>
+    </div>
+    <br>
+    <div class="btn">
+        <button type="submit" class="btn btn-primary register-button">Update</button>
+    </div>
 </form>
 {% endblock %}

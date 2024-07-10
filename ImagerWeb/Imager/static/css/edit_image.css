@@ -1,0 +1,16 @@
+form img, textarea, input, label{
+    display: block;
+    margin: auto;
+}
+label{
+    display: block;
+    text-align: center;
+}
+#id_is_private{
+    margin-right: 5px;
+}
+.btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
