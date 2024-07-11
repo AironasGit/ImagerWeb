@@ -6,7 +6,6 @@ __pycache__
 db.sqlite3
 media
 my_settings.py
-migrations
 
 # Visual Studio Code # 
 .vscode/* 

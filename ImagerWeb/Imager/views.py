@@ -3,7 +3,7 @@ from .models import Image
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth.forms import User
-from .models import Image, Profile, Plan
+from .models import Image, Profile, Plan, API
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.contrib.auth.password_validation import validate_password
@@ -216,6 +216,9 @@ class UploadImageAPIView(APIView):
         if not file.get('image', False):
             return Response({'Massage': 'No image was sent'}, status=status.HTTP_400_BAD_REQUEST)
         
+        if not API.objects.filter(key=data['api_key']).exists():
+            return Response({'API': 'Incorrect API key'}, status=status.HTTP_400_BAD_REQUEST)
+        
         user = authenticate(username=request.data['username'], password=request.data['password'])
         if user is None:
             return Response({'Massage': 'Invalid Username and Password'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -240,7 +243,7 @@ class UploadImageAPIView(APIView):
     
 class ValidateUserAPIView(APIView):
     def post(self, request):
-        args = ('username', 'password')
+        args = ('username', 'password', 'api_key')
         flag = False
         missings_args = []
         data = request.data.copy()
@@ -253,6 +256,9 @@ class ValidateUserAPIView(APIView):
                 missings_args.append(e.args[0])
         if flag:
             return Response({'Missing args error': missings_args}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not API.objects.filter(key=data['api_key']).exists():
+            return Response({'API': 'Incorrect API key'}, status=status.HTTP_400_BAD_REQUEST)
         
         user = authenticate(username=data['username'], password=data['password'])
         if user is None:

@@ -54,3 +54,6 @@ class Plan(models.Model):
     
     def __str__(self):
         return f"{self.name}"
+
+class API(models.Model):
+    key = models.CharField(verbose_name='Key', max_length=128)
