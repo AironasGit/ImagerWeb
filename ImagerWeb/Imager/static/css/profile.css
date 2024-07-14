@@ -13,8 +13,8 @@
     display: block;
     margin: auto;
     max-width: 50%;
-    height: 160px;
-    border-radius: 15%;
+    height: auto;
+    border-radius: 15px;
 }
 .profileInfo{
     display: grid;
