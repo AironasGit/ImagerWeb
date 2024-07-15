@@ -11,14 +11,17 @@
             <textarea readonly name="description" rows="4" cols="26">{{image.description}}</textarea>
         </div>
         <div class="other">
-            <p>Title: {{image.title}}</p>
-            <p>Date: {{image.date}}</p>
-            <p>Owner {{image.user__username}}</p>
-            {% if image.view_count == 1 %}
-                <p>{{image.view_count}} View</p>
-            {% else %}
-                <p>{{image.view_count}} Views</p>
-            {% endif %}
+            <p>🏷️{{image.title}}</p>
+            <p>📅{{image.date}}</p>
+            <p>
+                {% if image.p_photo %}
+                    <img src="/media/{{image.p_photo}}">
+                {% else %}
+                    <img src="/media/Default.jpg">
+                {% endif %} 
+                {{image.user__username}}
+            </p>
+            <p>👀{{image.view_count}}</p>
         </div>
     </div>
     <form action="get">

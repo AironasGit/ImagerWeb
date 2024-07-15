@@ -37,12 +37,12 @@
                                 <img src="/media/{{item.image}}"/>
                             </div>
                             {% if item.is_private %}
-                                <p>Private</p>
+                                <p>🔒Private</p>
                             {% else %}
-                                <p>Public</p>
+                                <p>🔓Public</p>
                             {% endif %}
-                            <p>Title: {{item.title}}</p>
-                            <p>Date: {{item.date}}</p>
+                            <p>🏷️{{item.title}}</p>
+                            <p>📅{{item.date}}</p>
                         </form>
                         <div style="display: flex;">
                             <form class="setProfile" method="post" action="{% url 'profile' %}">

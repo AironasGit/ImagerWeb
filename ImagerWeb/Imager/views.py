@@ -23,7 +23,7 @@ import os
 from pathlib import Path
 
 def index(request):
-    values = ('user__username', 'image', 'date', 'view_count', 'title')
+    values = ('user__username', 'image', 'date', 'view_count', 'title', 'user__id')
     query = request.COOKIES.get('query', '')
     sort_option = request.COOKIES.get('sort_option', 'views_desc')
     sort = get_sort(sort_option)
@@ -32,6 +32,9 @@ def index(request):
     paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')
     paged_images = paginator.get_page(page_number)
+    for paged_image in paged_images:
+        profile_photo = Profile.objects.filter(user=paged_image['user__id']).values('photo__image').first()
+        paged_image['p_photo'] = profile_photo['photo__image']
     context ={
         'images': paged_images,
         'query': query,
@@ -43,6 +46,8 @@ def image(request, image_name):
     values = ('user__id', 'user__username', 'image', 'date', 'id', 'view_count', 'description', 'title')
     image = Image.objects.filter(image=image_name).values(*values).first()
     Image.objects.filter(image=image_name).update(view_count=image['view_count']+1)
+    profile_photo = Profile.objects.filter(user=image['user__id']).values('photo__image').first()
+    image['p_photo'] = profile_photo['photo__image']
     context ={
         'image': image
     }

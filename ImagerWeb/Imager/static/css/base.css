@@ -137,3 +137,8 @@ input[type=search]{
   display: block;
   margin: auto;
 }
+
+p img{
+  width: 15px;
+  height: 15px;
+}
