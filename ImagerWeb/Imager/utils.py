@@ -1,10 +1,12 @@
 import os
 from .models import Image
 from django.db.models import Q
+from pathlib import Path
 
 def get_images_size(images: Image) -> float: # size in MB
     images_size = 0
-    location = f'{os.path.abspath(os.path.dirname(__name__))}/Imager/media/'
+    base_dir = Path(__file__).resolve().parent.parent
+    location = f'{base_dir}/Imager/media/'
     for image in images:
         images_size += os.path.getsize(f"{location}{image['image']}")
     images_size = round(images_size / (1024*1024.0), 2)

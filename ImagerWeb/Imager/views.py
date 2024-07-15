@@ -20,6 +20,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 from hashlib import sha256
 from datetime import datetime
 import os
+from pathlib import Path
 
 def index(request):
     values = ('user__username', 'image', 'date', 'view_count', 'title')
@@ -59,8 +60,9 @@ def edit_image(request, image_name):
             is_private = True
         if image.is_private == False and is_private == True:
             new_image_name = sha256(f"{image_name}{str(datetime.now())}".encode('utf-8')).hexdigest() + '.' + image_name.rsplit('.', 1)[-1]
-            old_file = os.path.join(f"{os. getcwd()}\\Imager\\media", image_name)
-            new_file = os.path.join(f"{os. getcwd()}\\Imager\\media", new_image_name)
+            base_dir = Path(__file__).resolve().parent.parent
+            old_file = os.path.join(f"{base_dir}/Imager/media", image_name)
+            new_file = os.path.join(f"{base_dir}/Imager/media", new_image_name)
             Image.objects.filter(image=image_name).update(image=new_image_name, is_private=is_private, description=request.POST.get('description'), title=request.POST.get('title'))
             os.rename(old_file, new_file)
             messages.info(request, f'Image updated')
@@ -69,7 +71,7 @@ def edit_image(request, image_name):
         messages.info(request, f'Image updated')
         return redirect(f'{image_name}')
     return render(request, template_name='edit_image.html', context=context)
-
+    
     
 @login_required(login_url='../accounts/login/')
 def profile(request):
