@@ -27,7 +27,7 @@ def index(request):
     query = request.COOKIES.get('query', '')
     sort_option = request.COOKIES.get('sort_option', 'views_desc')
     sort = get_sort(sort_option)
-    images = Image.objects.filter(is_private=False).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query) | Q(title__icontains=query)).order_by(sort)
+    images = Image.objects.filter(is_private=False).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query) | Q(title__icontains=query) | Q(date__icontains=query)).order_by(sort)
     per_page = 8
     paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')
@@ -81,13 +81,33 @@ def edit_image(request, image_name):
 @login_required(login_url='../accounts/login/')
 def profile(request):
     if request.method == 'POST':
-        set_profile_photo(request)
+        if 'setProfileImageName' in request.POST:
+            image_name = request.POST.get('setProfileImageName')
+            try:
+                image = Image.objects.get(image=image_name)
+            except:
+                messages.error(request, f'Image does not exist')
+                return redirect(f'profile')
+            profile = Profile.objects.get(user=request.user.id)
+            profile.photo = image
+            profile.save()
+            messages.info(request, f'Profile picture set!')
+            return redirect(f'profile')
+        if 'deleteImageName' in request.POST:
+            image_name = request.POST.get('deleteImageName')
+            try:
+                Image.objects.filter(image=image_name).delete()
+                messages.info(request, f'Image deleted')
+                return redirect(f'profile')
+            except Exception as e:
+                messages.error(request, e)
+                return redirect(f'profile')
     values = ('user__username', 'image', 'date', 'is_private', 'id', 'title')
     per_page = 6
     query = request.COOKIES.get('query', '')
     sort_option = request.COOKIES.get('sort_option', 'views_desc')
     sort = get_sort(sort_option)
-    images = Image.objects.filter(user_id=request.user.id).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query) | Q(title__icontains=query)).order_by(sort)
+    images = Image.objects.filter(user_id=request.user.id).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query) | Q(title__icontains=query) | Q(date__icontains=query)).order_by(sort)
     all_images = Image.objects.filter(user_id=request.user.id).values('image')
     profile = Profile.objects.filter(user_id=request.user.id).first()
     paginator = Paginator(images, per_page=per_page)
@@ -183,7 +203,7 @@ def public_profile(request, username):
     query = request.COOKIES.get('query', '')
     sort_option = request.COOKIES.get('sort_option', 'views_desc')
     sort = get_sort(sort_option)
-    images = Image.objects.filter(user__username=username, is_private=False).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query) | Q(title__icontains=query)).order_by(sort)
+    images = Image.objects.filter(user__username=username, is_private=False).values(*values).filter(Q(description__icontains=query) | Q(user__username__icontains=query) | Q(title__icontains=query) | Q(date__icontains=query)).order_by(sort)
     paginator = Paginator(images, per_page=per_page)
     page_number = request.GET.get('page')
     paged_images = paginator.get_page(page_number)

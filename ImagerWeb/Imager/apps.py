@@ -6,4 +6,4 @@ class ImagerConfig(AppConfig):
     name = 'Imager'
     
     def ready(self):
-        from .signals import create_profile
+        from .signals import create_profile, delete_img_from_folder

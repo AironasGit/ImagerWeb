@@ -45,15 +45,19 @@
                             <p>📅{{item.date}}</p>
                         </form>
                         <div style="display: flex;">
-                            <form class="setProfile" method="post" action="{% url 'profile' %}">
+                            <form class="imgBtn" method="post" action="{% url 'profile' %}">
                                 {% csrf_token %}
-                                <input name="imageId" type="hidden" value="{{item.id}}">
+                                <input name="setProfileImageName" type="hidden" value="{{item.image}}">
                                 <button type="submit" class="btn btn-primary"  id="btn">Set as profile</button>
                             </form>
-                            <form class="setProfile" class="btn" action="{% url 'edit_image' item.image %}">
+                            <form class="imgBtn" class="btn" action="{% url 'edit_image' item.image %}">
                                 {% csrf_token %}
-                                <input name="imageId" type="hidden" value="{{image.id}}">
-                                <button type="submit" class="btn btn-primary"  id="btn">Edit Image</button>
+                                <button type="submit" class="btn btn-primary"  id="btn">Edit</button>
+                            </form>
+                            <form class="imgBtn" method="post" class="btn" action="{% url 'profile' %}">
+                                {% csrf_token %}
+                                <input name="deleteImageName" type="hidden" value="{{item.image}}">
+                                <button type="submit" class="btn btn-primary"  id="btn">Delete</button>
                             </form>
                         </div>
                     </div>
@@ -62,6 +66,7 @@
                 <h1 class="noImagesText">No Images Found</h1>
             {% endif %}
         </div>
+        <br>
         {% if images.has_other_pages %}
             <ul class="pagination pagination-sm justify-content-center">
                 {% for i in images.paginator.page_range %}

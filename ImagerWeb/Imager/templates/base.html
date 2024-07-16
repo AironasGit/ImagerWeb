@@ -12,9 +12,6 @@
   </head>
   <body>
     <header>
-      {% if user.is_authenticated %}
-        <p>{{request.user.username}}</p>
-      {% endif %}
       <p class="headerText">{% block 'header' %}{% endblock %}</p>
     </header>
     <div class="navBar">
