@@ -3,7 +3,7 @@ from .models import Image
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib.auth.forms import User
-from .models import Image, Profile, Plan, API
+from .models import Image, Profile, Plan, API, ViewedImage
 from django.views.decorators.csrf import csrf_protect
 from django.contrib import messages
 from django.contrib.auth.password_validation import validate_password
@@ -45,7 +45,11 @@ def index(request):
 def image(request, image_name):
     values = ('user__id', 'user__username', 'image', 'date', 'id', 'view_count', 'description', 'title')
     image = Image.objects.filter(image=image_name).values(*values).first()
-    Image.objects.filter(image=image_name).update(view_count=image['view_count']+1)
+    if not ViewedImage.objects.filter(user=image['user__id'], image=image['id']).exists():
+        Image.objects.filter(image=image_name).update(view_count=image['view_count']+1)
+        user = User.objects.filter(id=image['user__id']).first()
+        viewed_img = Image.objects.filter(id=image['id']).first()
+        ViewedImage.objects.create(user=user, image=viewed_img)
     profile_photo = Profile.objects.filter(user=image['user__id']).values('photo__image').first()
     image['p_photo'] = profile_photo['photo__image']
     context ={
@@ -214,16 +218,6 @@ def public_profile(request, username):
     }
     return render(request, template_name='public_profile.html', context=context)
 
-
-def set_profile_photo(request):
-    profile = Profile.objects.get(user=request.user.id)
-    image_id = request.POST.get('imageId')
-    if image_id != None:
-        image = Image.objects.get(id=image_id)
-        profile.photo = image
-        profile.save()
-        messages.info(request, f'Profile picture set!')
-        return redirect(f'profile')
 
 class UploadImageAPIView(APIView):
     def post(self, request):

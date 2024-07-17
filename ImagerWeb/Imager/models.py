@@ -40,7 +40,7 @@ class Image(models.Model):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, verbose_name=('User'), on_delete=models.CASCADE)
     photo = models.ForeignKey(to='Image', verbose_name=('Photo'), on_delete=models.SET_NULL, null=True, blank=True)
     plan = models.ForeignKey(to='Plan', verbose_name='Plan', on_delete=models.DO_NOTHING)
     
@@ -57,3 +57,7 @@ class Plan(models.Model):
 
 class API(models.Model):
     key = models.CharField(verbose_name='Key', max_length=128)
+
+class ViewedImage(models.Model):
+    user = models.ForeignKey(to=User, verbose_name='User', on_delete=models.CASCADE)
+    image = models.ForeignKey(to='Image', verbose_name='Image', on_delete=models.CASCADE)
