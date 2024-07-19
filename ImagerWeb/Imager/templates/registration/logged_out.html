@@ -3,6 +3,13 @@
 {% block 'title' %}Log out{% endblock %}
 
 {% block 'content' %}
-  <p>Successfuly logged out!</p>  
-  <a href="{% url 'login'%}">Login</a>
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-sm">
+          <div class="alert alert-success" role="alert">
+            Successfuly logged out!
+          </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
