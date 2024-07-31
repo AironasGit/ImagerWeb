@@ -1,0 +1,44 @@
+h4{
+    text-align: center;
+}
+.title{
+    display: flex;
+}
+.title box-icon{
+    width: 100px;
+    height: 100px;
+    margin-left: auto;
+    margin-right: 0px;
+}
+.title p{
+    margin-left: 20px;
+    margin-right: auto;
+    font-size: 70px;
+}
+.description{
+    display: grid;
+    grid-template-columns: auto auto;
+}
+.description .firstColumn{
+    display: flex;
+    margin-left: 55%;
+    margin-right: auto;
+    margin-bottom: 5%;
+}
+.description .secondColumn{
+    display: flex;
+    margin-right: 55%;
+    margin-left: 10px;
+    margin-bottom: 5%;
+}
+.description div box-icon{
+    width: 70px;
+    height: 70px;
+    margin-right: 10px;
+}
+.description div div{
+    display: block;
+}
+.description div div p{
+    margin-bottom: 0px;
+}

@@ -22,6 +22,12 @@ from datetime import datetime
 import os
 from pathlib import Path
 
+def home(request):
+    context ={
+    }
+    return render(request, template_name='home.html', context=context)
+
+
 def index(request):
     values = ('user__username', 'image', 'date', 'view_count', 'title', 'user__id')
     query = request.COOKIES.get('query', '')

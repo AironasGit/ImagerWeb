@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block 'title' %}Home{% endblock %}
+{% block 'extraStatic' %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+{% block 'content' %}
+<div class="title">
+    <box-icon name='screenshot' class="icon"></box-icon>
+    <p><b>Imager</b></p>
+</div>
+<h4><b>Image and screenshot sharing platform</b></h4>
+<br>
+<div class="description">
+    <div class="firstColumn">
+        <box-icon name='upload'></box-icon>
+        <div>
+            <p><b>Upload images</b></p>
+            <p>Upload images using the website <br> and screenshots using the app!</p>
+        </div>
+    </div>
+    <div class="secondColumn">
+        <box-icon name='share-alt' type='solid'></box-icon>
+        <div>
+            <p><b>Share images</b></p>
+            <p>Share public images with everyone <br> and private images via URL only</p>
+        </div>
+    </div>
+    <div class="firstColumn">
+        <box-icon name='area'></box-icon>
+        <div>
+            <p><b>Sreenshot selected area</b></p>
+            <p>With my app you can select any area and<br> take a screenshot with your preferred keybind</p>
+        </div>
+    </div>
+    <div class="secondColumn">
+        <box-icon name='search'></box-icon>
+        <div>
+            <p><b>Search images</b></p>
+            <p>Search for images by Title, <br> Description, Owner, and Date</p>
+        </div>
+    </div>
+    <div class="firstColumn">
+        <box-icon name='windows' type="logo"></box-icon>
+        <div>
+            <p><b>App platform</b></p>
+            <p>Currently the app is only supported on Windows <br> Launch the application from <a href="https://github.com/AironasGit/ImagerApp">source code</a></p>
+        </div>
+    </div>
+    <div class="secondColumn">
+        <box-icon name='lock-open' type="solid"></box-icon>
+        <div>
+            <p><b>Open source</b></p>
+            <p><a href="https://github.com/AironasGit/ImagerWeb">Website</a> source code<br><a href="https://github.com/AironasGit/ImagerApp">App</a> source code</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

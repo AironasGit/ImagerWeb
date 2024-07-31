@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block 'title' %}Home{% endblock %}
+{% block 'title' %}Public{% endblock %}
 {% block 'header' %}All public images{% endblock %}
 {% block 'content' %}
 {% include "search_bar.html" %}
@@ -18,7 +18,7 @@
                         {% if item.p_photo %}
                             <img src="/media/{{item.p_photo}}">
                         {% else %}
-                            <img src="/media/Default.jpg">
+                            <img src="/media/important/Default.jpg">
                         {% endif %} 
                         {{item.user__username}}
                     </p>
