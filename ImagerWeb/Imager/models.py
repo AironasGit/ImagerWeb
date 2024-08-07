@@ -7,11 +7,11 @@ import os
 
 class Image(models.Model):
     user = models.ForeignKey(to=User, verbose_name='User', on_delete=models.CASCADE, null=True, blank=True)
-    image = models.ImageField('Image', upload_to='')
-    date = models.DateTimeField(verbose_name='Date', auto_now_add=True)
-    is_private = models.BooleanField(verbose_name='Is Private', default=True)
+    image = models.ImageField('Image', upload_to='', null=True, blank=True)
+    date = models.DateTimeField(verbose_name='Date', auto_now_add=True, null=True, blank=True)
+    is_private = models.BooleanField(verbose_name='Is Private', default=True, null=True, blank=True)
     description = models.TextField(verbose_name='Description', null=True, blank=True, max_length=100)
-    view_count = models.IntegerField(verbose_name='View Count', default=0)
+    view_count = models.IntegerField(verbose_name='View Count', default=0, null=True, blank=True)
     title = models.CharField(verbose_name='Title', max_length=30, null=True, blank=True)
     
     def __str__(self):
@@ -40,24 +40,24 @@ class Image(models.Model):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, verbose_name=('User'), on_delete=models.CASCADE)
+    user = models.OneToOneField(User, verbose_name=('User'), on_delete=models.CASCADE, null=True, blank=True)
     photo = models.ForeignKey(to='Image', verbose_name=('Photo'), on_delete=models.SET_NULL, null=True, blank=True)
-    plan = models.ForeignKey(to='Plan', verbose_name='Plan', on_delete=models.DO_NOTHING)
+    plan = models.ForeignKey(to='Plan', verbose_name='Plan', on_delete=models.PROTECT, null=True, blank=True)
     
     def __str__(self):
         return f"{self.user.username}"
     
 class Plan(models.Model):
-    name = models.CharField(verbose_name=('Name'), max_length=20)
-    space_limit = models.IntegerField(verbose_name='Space Limit')
-    image_limit = models.IntegerField(verbose_name='Image Limit')
+    name = models.CharField(verbose_name=('Name'), max_length=20, null=True, blank=True)
+    space_limit = models.IntegerField(verbose_name='Space Limit', null=True, blank=True)
+    image_limit = models.IntegerField(verbose_name='Image Limit', null=True, blank=True)
     
     def __str__(self):
         return f"{self.name}"
 
 class API(models.Model):
-    key = models.CharField(verbose_name='Key', max_length=128)
+    key = models.CharField(verbose_name='Key', max_length=128, null=True, blank=True)
 
 class ViewedImage(models.Model):
-    user = models.ForeignKey(to=User, verbose_name='User', on_delete=models.CASCADE)
-    image = models.ForeignKey(to='Image', verbose_name='Image', on_delete=models.CASCADE)
+    user = models.ForeignKey(to=User, verbose_name='User', on_delete=models.CASCADE, null=True, blank=True)
+    image = models.ForeignKey(to='Image', verbose_name='Image', on_delete=models.CASCADE, null=True, blank=True)
